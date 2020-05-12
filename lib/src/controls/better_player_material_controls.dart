@@ -46,6 +46,43 @@ class _BetterPlayerMaterialControlsState
   BetterPlayerControlsConfiguration get _controlsConfiguration =>
       widget.controlsConfiguration;
 
+  // 横向滑动进度条
+  bool showTimeLine = false;
+  double horizontalPoint;
+  Duration currentPlayerPosition;
+  double horizontalDragTime = 0.0;
+
+  void _onHorizontalDragDown(DragDownDetails d) async {
+    horizontalPoint = d.localPosition.dx;
+    currentPlayerPosition = _latestValue.position;
+  }
+
+  void _onHorizontalDragStart(DragStartDetails d) async {
+    _cancelAndRestartTimer();
+    setState(() {
+      showTimeLine = true;
+    });
+  }
+
+  void _onHorizontalDragUpdate(DragUpdateDetails d) async {
+    _cancelAndRestartTimer();
+    final w = MediaQuery.of(context).size.width;
+    final m = (d.localPosition.dx - horizontalPoint) / w * 90; // 90s
+    _betterPlayerController.seekTo(
+        currentPlayerPosition + Duration(seconds: horizontalDragTime.toInt()));
+    horizontalDragTime = m;
+
+    setState(() {});
+  }
+
+  void _onHorizontalDragEnd(DragEndDetails d) async {
+    _cancelAndRestartTimer();
+
+    setState(() {
+      showTimeLine = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_latestValue.hasError) {
@@ -61,15 +98,20 @@ class _BetterPlayerMaterialControlsState
           _cancelAndRestartTimer();
           _onPlayPause();
         },
+        //水平滑动
+        onHorizontalDragStart: _onHorizontalDragStart,
+        onHorizontalDragDown: _onHorizontalDragDown,
+        onHorizontalDragUpdate: _onHorizontalDragUpdate,
+        onHorizontalDragEnd: _onHorizontalDragEnd,
         child: AbsorbPointer(
             absorbing: _hideStuff,
             child: Column(
               children: <Widget>[
-                _latestValue.initialized ? _buildAppBar(context) : null,
+                if (_latestValue.initialized) _buildAppBar(context),
                 _isLoading() || !_latestValue.initialized
                     ? Expanded(child: Center(child: _buildLoadingWidget()))
                     : _buildHitArea(),
-                _latestValue.initialized ? _buildBottomBar(context) : null,
+                if (_latestValue.initialized) _buildBottomBar(context),
               ],
             )),
       ),
@@ -150,15 +192,14 @@ class _BetterPlayerMaterialControlsState
         height: _controlsConfiguration.controlBarHeight,
         child: Row(
           children: [
-            Navigator.of(context).canPop()
-                ? IconButton(
-                    icon: Icon(Icons.arrow_back,
-                        color: _controlsConfiguration.iconsColor),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                  )
-                : null,
+            if (Navigator.of(context).canPop())
+              IconButton(
+                icon: Icon(Icons.arrow_back,
+                    color: _controlsConfiguration.iconsColor),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
             Expanded(
               child: Text(
                 _betterPlayerController.appBarTitle,
@@ -244,21 +285,40 @@ class _BetterPlayerMaterialControlsState
   }
 
   Widget _buildHitArea() {
+    final duration = _latestValue != null && _latestValue.duration != null
+        ? _latestValue.duration
+        : Duration.zero;
     return Expanded(
-      child: Container(
-        color: Colors.transparent,
-        child: Center(
-          child: AnimatedOpacity(
-            opacity:
-                _latestValue != null && !_latestValue.isPlaying && !_dragging
-                    ? 1.0
-                    : 0.0,
-            duration: _controlsConfiguration.controlsHideTime,
-            child: Stack(
-              children: [
-                _buildPlayReplayButton(),
-                _buildNextVideoWidget(),
-              ],
+      child: GestureDetector(
+        child: Container(
+          color: Colors.transparent,
+          child: Center(
+            child: AnimatedOpacity(
+              opacity:
+                  _latestValue != null && !_latestValue.isPlaying && !_dragging
+                      ? 1.0
+                      : 0.0,
+              duration: _controlsConfiguration.controlsHideTime,
+              child: Stack(
+                children: [
+                  _buildPlayReplayButton(),
+                  _buildNextVideoWidget(),
+                  if (showTimeLine)
+                    Container(
+                      alignment: Alignment.center,
+                      color: Colors.black.withOpacity(0.5),
+                      width: MediaQuery.of(context).size.width / 4,
+                      height: _controlsConfiguration.controlBarHeight,
+                      child: Center(
+                        child: Text(
+                          '${formatDuration(currentPlayerPosition + Duration(seconds: horizontalDragTime.toInt()))} / ${formatDuration(duration)}',
+                          style: TextStyle(
+                              color: _controlsConfiguration.textColor),
+                        ),
+                      ),
+                    )
+                ],
+              ),
             ),
           ),
         ),
@@ -535,6 +595,45 @@ class _BetterPlayerMaterialControlsState
     return CircularProgressIndicator(
       valueColor:
           AlwaysStoppedAnimation<Color>(_controlsConfiguration.controlBarColor),
+    );
+  }
+}
+
+class LinearProgress extends StatelessWidget {
+  final double len;
+  final IconData icon;
+  final Color color;
+
+  LinearProgress(this.len, this.icon, this.color);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.black.withOpacity(0.5),
+        borderRadius: BorderRadius.all(Radius.circular(2)),
+      ),
+      width: MediaQuery.of(context).size.width / 4,
+      padding: EdgeInsets.all(5),
+      child: Row(
+        children: <Widget>[
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 2),
+            child: Icon(
+              icon,
+              size: 20,
+              color: color,
+            ),
+          ),
+          Expanded(
+            child: LinearProgressIndicator(
+              value: len,
+              backgroundColor: Colors.white.withOpacity(0.5),
+              valueColor: AlwaysStoppedAnimation<Color>(Colors.purple),
+            ),
+          )
+        ],
+      ),
     );
   }
 }
