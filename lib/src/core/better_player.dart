@@ -39,6 +39,7 @@ class BetterPlayerState extends State<BetterPlayer> {
   void initState() {
     super.initState();
     _setup();
+    Wakelock.enable();
   }
 
   void _setup() async {
@@ -49,6 +50,7 @@ class BetterPlayerState extends State<BetterPlayer> {
   void dispose() {
     widget.controller.removeListener(listener);
     widget.controller.dispose();
+    Wakelock.disable();
     super.dispose();
   }
 
@@ -135,9 +137,9 @@ class BetterPlayerState extends State<BetterPlayer> {
       ]);
     }
 
-    if (!widget.controller.allowedScreenSleep) {
-      Wakelock.enable();
-    }
+    // if (!widget.controller.allowedScreenSleep) {
+    //   Wakelock.enable();
+    // }
 
     await Navigator.of(context, rootNavigator: true).push(route);
     _isFullScreen = false;
@@ -145,7 +147,7 @@ class BetterPlayerState extends State<BetterPlayer> {
 
     // The wakelock plugins checks whether it needs to perform an action internally,
     // so we do not need to check Wakelock.isEnabled.
-    Wakelock.disable();
+    // Wakelock.disable();
 
     SystemChrome.setEnabledSystemUIOverlays(
         widget.controller.systemOverlaysAfterFullScreen);

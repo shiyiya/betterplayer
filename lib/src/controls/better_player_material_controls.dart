@@ -8,6 +8,8 @@ import 'package:better_player/src/core/better_player_controller.dart';
 import 'package:better_player/src/core/utils.dart';
 import 'package:better_player/src/video_player/video_player.dart';
 import 'package:flutter/material.dart';
+import 'package:music_volume/music_volume.dart';
+import 'package:screen/screen.dart';
 
 import 'better_player_clickable_widget.dart';
 
@@ -82,6 +84,66 @@ class _BetterPlayerMaterialControlsState
       showTimeLine = false;
     });
   }
+  // = 横向滑动 end
+
+  // |||
+  double _startVerticalDragY = 0;
+  double _startVerticalDragX = 0;
+  double _endVerticalDragY = 0;
+
+  bool showBrightness = false;
+  double initBri;
+  double brighting = 0.0;
+
+  bool showVolTip = false;
+  int initVol;
+  double voling = 0.0;
+  double volProgress = 0.0;
+
+  void _onVerticalDragDown(DragDownDetails d) {
+    _startVerticalDragX = d.localPosition.dx;
+    _startVerticalDragY = d.localPosition.dy;
+  }
+
+  void _onVerticalDragStart(DragStartDetails d) async {
+    if (_startVerticalDragX < MediaQuery.of(context).size.width / 2) {
+      initBri = await Screen.brightness;
+      showBrightness = true;
+    } else {
+      initVol = await MusicVolume.currentVolume; /*await Volume.getVol*/
+      showVolTip = true;
+    }
+    setState(() {});
+  }
+
+  void _onVerticalDragUpdate(DragUpdateDetails d) async {
+    final w = MediaQuery.of(context).size.width;
+    _endVerticalDragY = d.localPosition.dy;
+    final drag = -(_endVerticalDragY - _startVerticalDragY);
+    final totalHor = w / _betterPlayerController.aspectRatio -
+        2 * _controlsConfiguration.controlBarHeight;
+    if (_startVerticalDragX < w / 2) {
+      final _ = initBri + (drag / totalHor);
+      brighting = _ <= 0 ? 0.0 : _ >= 1 ? 1.0 : _;
+      await Screen.setBrightness(brighting);
+    } else {
+      final int maxVol = await MusicVolume.maxVolume ?? 0;
+      final _ = initVol + drag / totalHor * maxVol;
+      voling = _ > maxVol ? maxVol.toDouble() : _ < 0.0 ? 0.0 : _;
+      volProgress = voling / maxVol;
+      await MusicVolume.changeVolume(_.toInt(), 0);
+    }
+    setState(() {});
+  }
+
+  void _onVerticalDragEnd(DragEndDetails d) async {
+    if (_startVerticalDragX < MediaQuery.of(context).size.width / 2) {
+      showBrightness = false;
+    } else {
+      showVolTip = false;
+    }
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -98,6 +160,13 @@ class _BetterPlayerMaterialControlsState
           _cancelAndRestartTimer();
           _onPlayPause();
         },
+
+        //垂直
+        onVerticalDragDown: _onVerticalDragDown,
+        onVerticalDragStart: _onVerticalDragStart,
+        onVerticalDragUpdate: _onVerticalDragUpdate,
+        onVerticalDragEnd: _onVerticalDragEnd,
+
         //水平滑动
         onHorizontalDragStart: _onHorizontalDragStart,
         onHorizontalDragDown: _onHorizontalDragDown,
@@ -115,8 +184,19 @@ class _BetterPlayerMaterialControlsState
                           ? Center(child: _buildLoadingWidget())
                           : _buildHitArea(),
                       if (showTimeLine)
-                        _buildGestureDetectorHander()
-                      // TODO 音量
+                        _buildGestureDetectorHander(),
+                      if (showBrightness)
+                        Center(
+                          child: LinearProgress(brighting, Icons.brightness_6,
+                              _controlsConfiguration.iconsColor),
+                        ),
+                      if (showVolTip)
+                        Center(
+                          child: LinearProgress(volProgress, Icons.volume_up,
+                              _controlsConfiguration.iconsColor),
+                        )
+
+                      //
                     ],
                   ),
                 ),
@@ -129,7 +209,6 @@ class _BetterPlayerMaterialControlsState
 
   bool _isLoading() {
     if (_latestValue != null) {
-      if (!_latestValue.initialized) return true;
       if (!_latestValue.isPlaying && _latestValue.duration == null) {
         return true;
       }

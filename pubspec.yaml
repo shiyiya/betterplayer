@@ -19,6 +19,7 @@ dependencies:
   meta: ^1.0.5
   flutter_widget_from_html_core: ^0.3.3+2
   music_volume: any
+  screen: any
 
 dev_dependencies:
   flutter_test:
