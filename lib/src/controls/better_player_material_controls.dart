@@ -108,9 +108,18 @@ class _BetterPlayerMaterialControlsState
             child: Column(
               children: <Widget>[
                 if (_latestValue.initialized) _buildAppBar(context),
-                _isLoading() || !_latestValue.initialized
-                    ? Expanded(child: Center(child: _buildLoadingWidget()))
-                    : _buildHitArea(),
+                Expanded(
+                  child: Stack(
+                    children: <Widget>[
+                      _isLoading()
+                          ? Center(child: _buildLoadingWidget())
+                          : _buildHitArea(),
+                      if (showTimeLine)
+                        _buildGestureDetectorHander()
+                      // TODO 音量
+                    ],
+                  ),
+                ),
                 if (_latestValue.initialized) _buildBottomBar(context),
               ],
             )),
@@ -120,6 +129,7 @@ class _BetterPlayerMaterialControlsState
 
   bool _isLoading() {
     if (_latestValue != null) {
+      if (!_latestValue.initialized) return true;
       if (!_latestValue.isPlaying && _latestValue.duration == null) {
         return true;
       }
@@ -202,7 +212,7 @@ class _BetterPlayerMaterialControlsState
               ),
             Expanded(
               child: Text(
-                _betterPlayerController.appBarTitle,
+                _betterPlayerController.appBarTitle ?? '',
                 style: TextStyle(color: _controlsConfiguration.iconsColor),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -284,41 +294,42 @@ class _BetterPlayerMaterialControlsState
     );
   }
 
-  Widget _buildHitArea() {
+  Widget _buildGestureDetectorHander() {
     final duration = _latestValue != null && _latestValue.duration != null
         ? _latestValue.duration
         : Duration.zero;
-    return Expanded(
-      child: GestureDetector(
-        child: Container(
-          color: Colors.transparent,
-          child: Center(
-            child: AnimatedOpacity(
-              opacity:
-                  _latestValue != null && !_latestValue.isPlaying && !_dragging
-                      ? 1.0
-                      : 0.0,
-              duration: _controlsConfiguration.controlsHideTime,
-              child: Stack(
-                children: [
-                  _buildPlayReplayButton(),
-                  _buildNextVideoWidget(),
-                  if (showTimeLine)
-                    Container(
-                      alignment: Alignment.center,
-                      color: Colors.black.withOpacity(0.5),
-                      width: MediaQuery.of(context).size.width / 4,
-                      height: _controlsConfiguration.controlBarHeight,
-                      child: Center(
-                        child: Text(
-                          '${formatDuration(currentPlayerPosition + Duration(seconds: horizontalDragTime.toInt()))} / ${formatDuration(duration)}',
-                          style: TextStyle(
-                              color: _controlsConfiguration.textColor),
-                        ),
-                      ),
-                    )
-                ],
-              ),
+    return Center(
+      child: Container(
+        alignment: Alignment.center,
+        color: Colors.black.withOpacity(0.6),
+        width: MediaQuery.of(context).size.width / 4,
+        height: _controlsConfiguration.controlBarHeight,
+        child: Center(
+          child: Text(
+            '${formatDuration(currentPlayerPosition + Duration(seconds: horizontalDragTime.toInt()))} / ${formatDuration(duration)}',
+            style: TextStyle(color: _controlsConfiguration.textColor),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHitArea() {
+    return GestureDetector(
+      child: Container(
+        color: Colors.transparent,
+        child: Center(
+          child: AnimatedOpacity(
+            opacity:
+                _latestValue != null && !_latestValue.isPlaying && !_dragging
+                    ? 1.0
+                    : 0.0,
+            duration: _controlsConfiguration.controlsHideTime,
+            child: Stack(
+              children: [
+                _buildPlayReplayButton(),
+                _buildNextVideoWidget(),
+              ],
             ),
           ),
         ),
