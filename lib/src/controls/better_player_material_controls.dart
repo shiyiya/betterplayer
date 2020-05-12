@@ -57,17 +57,21 @@ class _BetterPlayerMaterialControlsState
       },
       child: GestureDetector(
         onTap: () => _cancelAndRestartTimer(),
+        onDoubleTap: () {
+          _cancelAndRestartTimer();
+          _onPlayPause();
+        },
         child: AbsorbPointer(
-          absorbing: _hideStuff,
-          child: Column(
-            children: [
-              _isLoading()
-                  ? Expanded(child: Center(child: _buildLoadingWidget()))
-                  : _buildHitArea(),
-              _buildBottomBar(context),
-            ],
-          ),
-        ),
+            absorbing: _hideStuff,
+            child: Column(
+              children: <Widget>[
+                _latestValue.initialized ? _buildAppBar(context) : null,
+                _isLoading() || !_latestValue.initialized
+                    ? Expanded(child: Center(child: _buildLoadingWidget()))
+                    : _buildHitArea(),
+                _latestValue.initialized ? _buildBottomBar(context) : null,
+              ],
+            )),
       ),
     );
   }
@@ -135,14 +139,49 @@ class _BetterPlayerMaterialControlsState
     }
   }
 
+  Widget _buildAppBar(BuildContext context) {
+    return AnimatedOpacity(
+      opacity: _hideStuff ? 0.0 : 1.0,
+      duration: _controlsConfiguration.controlsHideTime,
+      onEnd: _onPlayerHide,
+      child: Container(
+        decoration: _controlsConfiguration.controlAppBarDecoration ??
+            BoxDecoration(color: _controlsConfiguration.controlBarColor),
+        height: _controlsConfiguration.controlBarHeight,
+        child: Row(
+          children: [
+            Navigator.of(context).canPop()
+                ? IconButton(
+                    icon: Icon(Icons.arrow_back,
+                        color: _controlsConfiguration.iconsColor),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  )
+                : null,
+            Expanded(
+              child: Text(
+                _betterPlayerController.appBarTitle,
+                style: TextStyle(color: _controlsConfiguration.iconsColor),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   AnimatedOpacity _buildBottomBar(BuildContext context) {
     return AnimatedOpacity(
       opacity: _hideStuff ? 0.0 : 1.0,
       duration: _controlsConfiguration.controlsHideTime,
       onEnd: _onPlayerHide,
       child: Container(
+        decoration: _controlsConfiguration.controlBarDecoration ??
+            BoxDecoration(color: _controlsConfiguration.controlBarColor),
         height: _controlsConfiguration.controlBarHeight,
-        color: _controlsConfiguration.controlBarColor,
         child: Row(
           children: [
             _controlsConfiguration.enablePlayPause
@@ -495,7 +534,7 @@ class _BetterPlayerMaterialControlsState
   Widget _buildLoadingWidget() {
     return CircularProgressIndicator(
       valueColor:
-      AlwaysStoppedAnimation<Color>(_controlsConfiguration.controlBarColor),
+          AlwaysStoppedAnimation<Color>(_controlsConfiguration.controlBarColor),
     );
   }
 }

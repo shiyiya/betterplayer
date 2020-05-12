@@ -79,6 +79,12 @@ class BetterPlayerControlsConfiguration {
   ///Control bar height
   final double controlBarHeight;
 
+  /// Control bar decoration
+  final BoxDecoration controlBarDecoration;
+
+  /// Control app bar decoration
+  final BoxDecoration controlAppBarDecoration;
+
   ///Default error widget text
   final String defaultErrorText;
 
@@ -92,7 +98,7 @@ class BetterPlayerControlsConfiguration {
   final Color liveTextColor;
 
   const BetterPlayerControlsConfiguration(
-      {this.controlBarColor = Colors.black87,
+      {this.controlBarColor = Colors.red,
       this.textColor = Colors.white,
       this.iconsColor = Colors.white,
       this.playIcon = Icons.play_arrow,
@@ -117,6 +123,8 @@ class BetterPlayerControlsConfiguration {
       this.showControls = true,
       this.showControlsOnInitialize = true,
       this.controlBarHeight = 48.0,
+      this.controlBarDecoration,
+      this.controlAppBarDecoration,
       this.defaultErrorText = "Video can't be played",
       this.loadingNextVideoText = "Loading next video",
       this.liveText = "LIVE",

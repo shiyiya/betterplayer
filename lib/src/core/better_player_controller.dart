@@ -38,6 +38,8 @@ class BetterPlayerController extends ChangeNotifier {
 
   Widget get overlay => betterPlayerConfiguration.overlay;
 
+  String appBarTitle;
+
   bool get fullScreenByDefault => betterPlayerConfiguration.fullScreenByDefault;
 
   bool get allowedScreenSleep => betterPlayerConfiguration.allowedScreenSleep;
@@ -118,6 +120,11 @@ class BetterPlayerController extends ChangeNotifier {
             "${betterPlayerDataSource.type} is not implemented");
     }
     await _initialize();
+  }
+
+  void setupAppBarTitle(String title) {
+    appBarTitle = title;
+    notifyListeners();
   }
 
   Future _initialize() async {
