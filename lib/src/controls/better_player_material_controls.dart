@@ -84,6 +84,7 @@ class _BetterPlayerMaterialControlsState
       showTimeLine = false;
     });
   }
+
   // = 横向滑动 end
 
   // |||
@@ -160,44 +161,48 @@ class _BetterPlayerMaterialControlsState
           _cancelAndRestartTimer();
           _onPlayPause();
         },
-
-        //垂直
-        onVerticalDragDown: _onVerticalDragDown,
-        onVerticalDragStart: _onVerticalDragStart,
-        onVerticalDragUpdate: _onVerticalDragUpdate,
-        onVerticalDragEnd: _onVerticalDragEnd,
-
-        //水平滑动
-        onHorizontalDragStart: _onHorizontalDragStart,
-        onHorizontalDragDown: _onHorizontalDragDown,
-        onHorizontalDragUpdate: _onHorizontalDragUpdate,
-        onHorizontalDragEnd: _onHorizontalDragEnd,
         child: AbsorbPointer(
             absorbing: _hideStuff,
             child: Column(
               children: <Widget>[
                 if (_latestValue.initialized) _buildAppBar(context),
                 Expanded(
-                  child: Stack(
-                    children: <Widget>[
-                      _isLoading()
-                          ? Center(child: _buildLoadingWidget())
-                          : _buildHitArea(),
-                      if (showTimeLine)
-                        _buildGestureDetectorHander(),
-                      if (showBrightness)
-                        Center(
-                          child: LinearProgress(brighting, Icons.brightness_6,
-                              _controlsConfiguration.iconsColor),
-                        ),
-                      if (showVolTip)
-                        Center(
-                          child: LinearProgress(volProgress, Icons.volume_up,
-                              _controlsConfiguration.iconsColor),
-                        )
+                  child: GestureDetector(
+                    //垂直
+                    onVerticalDragDown: _onVerticalDragDown,
+                    onVerticalDragStart: _onVerticalDragStart,
+                    onVerticalDragUpdate: _onVerticalDragUpdate,
+                    onVerticalDragEnd: _onVerticalDragEnd,
 
-                      //
-                    ],
+                    //水平滑动
+                    onHorizontalDragStart: _onHorizontalDragStart,
+                    onHorizontalDragDown: _onHorizontalDragDown,
+                    onHorizontalDragUpdate: _onHorizontalDragUpdate,
+                    onHorizontalDragEnd: _onHorizontalDragEnd,
+                    child: Stack(
+                      children: <Widget>[
+                        _isLoading()
+                            ? Center(child: _buildLoadingWidget())
+                            : _buildHitArea(),
+                        if (showTimeLine) _buildGestureDetectorHander(),
+                        if (showBrightness)
+                          Center(
+                            child: LinearProgress(
+                              brighting,
+                              Icons.brightness_6,
+                              _controlsConfiguration.iconsColor,
+                            ),
+                          ),
+                        if (showVolTip)
+                          Center(
+                            child: LinearProgress(
+                              volProgress,
+                              Icons.volume_up,
+                              _controlsConfiguration.iconsColor,
+                            ),
+                          )
+                      ],
+                    ),
                   ),
                 ),
                 if (_latestValue.initialized) _buildBottomBar(context),
