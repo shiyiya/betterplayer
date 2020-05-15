@@ -164,11 +164,12 @@ class _BetterPlayerMaterialControlsState
             ),
           Expanded(
             child: GestureDetector(
-              onTap: () => _cancelAndRestartTimer(),
-              onDoubleTap: () {
-                _cancelAndRestartTimer();
-                _onPlayPause();
+              onTap: () {
+                setState(() {
+                  _hideStuff = !_hideStuff;
+                });
               },
+              onDoubleTap: () => _onPlayPause(),
 
               //垂直
               onVerticalDragDown: _onVerticalDragDown,
@@ -186,7 +187,7 @@ class _BetterPlayerMaterialControlsState
                   _isLoading()
                       ? Center(child: _buildLoadingWidget())
                       : _buildHitArea(),
-                  if (showTimeLine) _buildGestureDetectorHander(),
+                  if (showTimeLine) _buildTimeLine(),
                   if (showBrightness)
                     Center(
                       child: LinearProgress(
@@ -383,7 +384,7 @@ class _BetterPlayerMaterialControlsState
     );
   }
 
-  Widget _buildGestureDetectorHander() {
+  Widget _buildTimeLine() {
     final duration = _latestValue != null && _latestValue.duration != null
         ? _latestValue.duration
         : Duration.zero;
@@ -404,7 +405,8 @@ class _BetterPlayerMaterialControlsState
   }
 
   Widget _buildHitArea() {
-    return GestureDetector(
+    return AbsorbPointer(
+      absorbing: _hideStuff,
       child: Container(
         color: Colors.transparent,
         child: Center(
