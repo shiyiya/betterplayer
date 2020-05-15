@@ -216,7 +216,7 @@ class DataSource {
     }
 
     if (formatHint != null) {
-      result = "$result:${rawFormalHint}";
+      result = "$result:$rawFormalHint";
     }
 
     return result;
