@@ -105,14 +105,16 @@ class BetterPlayerController extends ChangeNotifier {
     setupDataSource(betterPlayerDataSource);
   }
 
-  void setupDataSource(BetterPlayerDataSource betterPlayerDataSource) async {
+  Future<void> setupDataSource(
+      BetterPlayerDataSource betterPlayerDataSource) async {
     switch (betterPlayerDataSource.type) {
       case BetterPlayerDataSourceType.NETWORK:
-        videoPlayerController.setNetworkDataSource(betterPlayerDataSource.url);
+        await videoPlayerController
+            .setNetworkDataSource(betterPlayerDataSource.url);
 
         break;
       case BetterPlayerDataSourceType.FILE:
-        videoPlayerController
+        await videoPlayerController
             .setFileDataSource(File(betterPlayerDataSource.url));
         break;
       default:
