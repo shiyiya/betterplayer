@@ -33,7 +33,7 @@ class BetterPlayerMaterialControls extends StatefulWidget {
 }
 
 class _BetterPlayerMaterialControlsState
-    extends State<BetterPlayerMaterialControls> {
+    extends State<BetterPlayerMaterialControls> with TickerProviderStateMixin {
   VideoPlayerValue _latestValue;
   double _latestVolume;
   bool _hideStuff = true;
@@ -47,6 +47,168 @@ class _BetterPlayerMaterialControlsState
 
   BetterPlayerControlsConfiguration get _controlsConfiguration =>
       widget.controlsConfiguration;
+
+  AnimationController sideAnimationController;
+  Animation<Offset> sideAnimation;
+
+  void toggleHideStuff() {
+    if (_sideShow) {
+      toggleSide();
+      return;
+    }
+
+    if (!_hideStuff) {
+      _startHideTimer();
+      return;
+    }
+    setState(() {
+      _hideStuff = !_hideStuff;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_latestValue.hasError) {
+      return _buildErrorWidget();
+    }
+    return MouseRegion(
+      onHover: (_) {
+        _cancelAndRestartTimer();
+      },
+      child: Stack(
+        children: <Widget>[
+          Column(
+            children: <Widget>[
+              AbsorbPointer(
+                absorbing: _hideStuff,
+                child: _buildAppBar(context),
+              ),
+              Expanded(
+                child: GestureDetector(
+                  onTap: toggleHideStuff,
+                  onDoubleTap: () => _onPlayPause(),
+
+                  //垂直
+                  onVerticalDragDown: _onVerticalDragDown,
+                  onVerticalDragStart: _onVerticalDragStart,
+                  onVerticalDragUpdate: _onVerticalDragUpdate,
+                  onVerticalDragEnd: _onVerticalDragEnd,
+
+                  //水平滑动
+                  onHorizontalDragStart: _onHorizontalDragStart,
+                  onHorizontalDragDown: _onHorizontalDragDown,
+                  onHorizontalDragUpdate: _onHorizontalDragUpdate,
+                  onHorizontalDragEnd: _onHorizontalDragEnd,
+                  child: Stack(
+                    children: <Widget>[
+                      _isLoading()
+                          ? Center(child: _buildLoadingWidget())
+                          : _buildHitArea(),
+                      if (showTimeLine) _buildTimeLine(),
+                      if (showBrightness)
+                        Center(
+                          child: LinearProgress(
+                            brighting,
+                            Icons.brightness_6,
+                            _controlsConfiguration.iconsColor,
+                          ),
+                        ),
+                      if (showVolTip)
+                        Center(
+                          child: LinearProgress(
+                            volProgress,
+                            Icons.volume_up,
+                            _controlsConfiguration.iconsColor,
+                          ),
+                        )
+                    ],
+                  ),
+                ),
+              ),
+              AbsorbPointer(
+                absorbing: _hideStuff,
+                child: _buildBottomBar(context),
+              ),
+            ],
+          ),
+          Align(
+            alignment: Alignment.topRight,
+            child: SlideTransition(
+              position: sideAnimation,
+              child: Container(
+                alignment: Alignment.topRight,
+                height: double.infinity,
+                width: MediaQuery.of(context).size.width / 5,
+                color: Colors.black.withOpacity(0.6),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [2.0, 1.5, 1.25, 1.0, 0.75, 0.5]
+                      .map((e) => Container(
+                            alignment: Alignment.center,
+                            child: InkWell(
+                              onTap: () {
+                                _controller.setSpeed(e);
+                                toggleSide();
+                              },
+                              child: Text(
+                                '$e x',
+                                style: TextStyle(
+                                  color: _controller.value.speed == e
+                                      ? _controlsConfiguration.textColor
+                                          .withRed(5)
+                                      : _controlsConfiguration.textColor,
+                                ),
+                              ),
+                            ),
+                          ))
+                      .toList(),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  bool _isLoading() {
+    if (_latestValue != null) {
+      if (!_latestValue.isPlaying && _latestValue.duration == null) {
+        return true;
+      }
+      if (_latestValue.isPlaying && _latestValue.isBuffering) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  @override
+  void dispose() {
+    _dispose();
+    super.dispose();
+  }
+
+  void _dispose() {
+    _controller?.removeListener(_updateState);
+    _hideTimer?.cancel();
+    _initTimer?.cancel();
+    _showAfterExpandCollapseTimer?.cancel();
+  }
+
+  @override
+  void didChangeDependencies() {
+    final _oldController = _betterPlayerController;
+    _betterPlayerController = BetterPlayerController.of(context);
+    _controller = _betterPlayerController.videoPlayerController;
+
+    if (_oldController != _betterPlayerController) {
+      _dispose();
+      _initialize();
+    }
+
+    super.didChangeDependencies();
+  }
 
   // 横向滑动进度条
   bool showTimeLine = false;
@@ -146,117 +308,6 @@ class _BetterPlayerMaterialControlsState
     setState(() {});
   }
 
-  @override
-  Widget build(BuildContext context) {
-    if (_latestValue.hasError) {
-      return _buildErrorWidget();
-    }
-    return MouseRegion(
-      onHover: (_) {
-        _cancelAndRestartTimer();
-      },
-      child: Column(
-        children: <Widget>[
-          if (_latestValue.initialized)
-            AbsorbPointer(
-              absorbing: _hideStuff,
-              child: _buildAppBar(context),
-            ),
-          Expanded(
-            child: GestureDetector(
-              onTap: () {
-                setState(() {
-                  _hideStuff = !_hideStuff;
-                });
-              },
-              onDoubleTap: () => _onPlayPause(),
-
-              //垂直
-              onVerticalDragDown: _onVerticalDragDown,
-              onVerticalDragStart: _onVerticalDragStart,
-              onVerticalDragUpdate: _onVerticalDragUpdate,
-              onVerticalDragEnd: _onVerticalDragEnd,
-
-              //水平滑动
-              onHorizontalDragStart: _onHorizontalDragStart,
-              onHorizontalDragDown: _onHorizontalDragDown,
-              onHorizontalDragUpdate: _onHorizontalDragUpdate,
-              onHorizontalDragEnd: _onHorizontalDragEnd,
-              child: Stack(
-                children: <Widget>[
-                  _isLoading()
-                      ? Center(child: _buildLoadingWidget())
-                      : _buildHitArea(),
-                  if (showTimeLine) _buildTimeLine(),
-                  if (showBrightness)
-                    Center(
-                      child: LinearProgress(
-                        brighting,
-                        Icons.brightness_6,
-                        _controlsConfiguration.iconsColor,
-                      ),
-                    ),
-                  if (showVolTip)
-                    Center(
-                      child: LinearProgress(
-                        volProgress,
-                        Icons.volume_up,
-                        _controlsConfiguration.iconsColor,
-                      ),
-                    )
-                ],
-              ),
-            ),
-          ),
-          if (_latestValue.initialized)
-            AbsorbPointer(
-              absorbing: _hideStuff,
-              child: _buildBottomBar(context),
-            ),
-        ],
-      ),
-    );
-  }
-
-  bool _isLoading() {
-    if (_latestValue != null) {
-      if (!_latestValue.isPlaying && _latestValue.duration == null) {
-        return true;
-      }
-      if (_latestValue.isPlaying && _latestValue.isBuffering) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  @override
-  void dispose() {
-    _dispose();
-    super.dispose();
-  }
-
-  void _dispose() {
-    _controller?.removeListener(_updateState);
-    _hideTimer?.cancel();
-    _initTimer?.cancel();
-    _showAfterExpandCollapseTimer?.cancel();
-  }
-
-  @override
-  void didChangeDependencies() {
-    final _oldController = _betterPlayerController;
-    _betterPlayerController = BetterPlayerController.of(context);
-    _controller = _betterPlayerController.videoPlayerController;
-
-    if (_oldController != _betterPlayerController) {
-      _dispose();
-      _initialize();
-    }
-
-    super.didChangeDependencies();
-  }
-
   Widget _buildErrorWidget() {
     if (_betterPlayerController.errorBuilder != null) {
       return _betterPlayerController.errorBuilder(context,
@@ -287,6 +338,7 @@ class _BetterPlayerMaterialControlsState
       duration: _controlsConfiguration.controlsHideTime,
       onEnd: _onPlayerHide,
       child: Container(
+        padding: EdgeInsets.only(right: 12),
         decoration: _controlsConfiguration.controlAppBarDecoration ??
             BoxDecoration(color: _controlsConfiguration.controlBarColor),
         height: _controlsConfiguration.controlBarHeight,
@@ -308,10 +360,34 @@ class _BetterPlayerMaterialControlsState
                 overflow: TextOverflow.ellipsis,
               ),
             ),
+            IconButton(
+              icon: Icon(
+                Icons.av_timer,
+                color: _controlsConfiguration.iconsColor,
+              ),
+              onPressed: toggleSide,
+            ),
           ],
         ),
       ),
     );
+  }
+
+  bool _sideShow = false;
+
+  void toggleSide() {
+    if (_sideShow) {
+      //关闭
+      sideAnimationController.reverse();
+      _hideStuff = false;
+      _sideShow = false;
+    } else {
+      //打开side
+      sideAnimationController.forward();
+      _hideStuff = true;
+      _sideShow = true;
+    }
+    setState(() {});
   }
 
   AnimatedOpacity _buildBottomBar(BuildContext context) {
@@ -456,6 +532,12 @@ class _BetterPlayerMaterialControlsState
         ),
       ),
       onTap: () {
+        print(_sideShow);
+        if (_sideShow) {
+          toggleSide();
+          return;
+        }
+
         if (_latestValue != null && _latestValue.isPlaying) {
           if (_displayTapped) {
             setState(() {
@@ -464,6 +546,7 @@ class _BetterPlayerMaterialControlsState
           } else
             _cancelAndRestartTimer();
         } else {
+          print('callme----------');
           _onPlayPause();
 
           setState(() {
@@ -591,6 +674,11 @@ class _BetterPlayerMaterialControlsState
 
   Future<Null> _initialize() async {
     _controller.addListener(_updateState);
+
+    sideAnimationController = AnimationController(
+        duration: const Duration(milliseconds: 200), vsync: this);
+    sideAnimation = Tween(begin: Offset(1, 0), end: Offset(0, 0))
+        .animate(sideAnimationController);
 
     _updateState();
 

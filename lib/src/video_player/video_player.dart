@@ -173,7 +173,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
 
   int _textureId;
 
-  DataSource _dataSource;
+  // DataSource _dataSource;
 
   ClosedCaptionFile _closedCaptionFile;
   Timer _timer;
@@ -309,7 +309,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       return;
     }
 
-    this._dataSource = dataSourceDescription;
+    // this._dataSource = dataSourceDescription;
 
     value = VideoPlayerValue(
       duration: null,

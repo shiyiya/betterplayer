@@ -135,7 +135,6 @@ class BetterPlayerController extends ChangeNotifier {
 
   Future _initialize() async {
     await videoPlayerController.setLooping(looping);
-    await setupSpeed(4.0);
 
     if (autoPlay) {
       if (fullScreenByDefault) {
