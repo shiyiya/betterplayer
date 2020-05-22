@@ -86,6 +86,11 @@ abstract class VideoPlayerPlatform {
     throw UnimplementedError('setLooping() has not been implemented.');
   }
 
+  /// Sets the speed attribute of the video.
+  Future<void> setSpeed(int textureId, double speed) {
+    throw UnimplementedError('setSpeed() has not been implemented.');
+  }
+
   /// Starts the video playback.
   Future<void> play(int textureId) {
     throw UnimplementedError('play() has not been implemented.');
