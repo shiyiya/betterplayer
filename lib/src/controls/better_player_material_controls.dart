@@ -379,7 +379,6 @@ class _BetterPlayerMaterialControlsState
     if (_sideShow) {
       //关闭
       sideAnimationController.reverse();
-      _hideStuff = false;
       _sideShow = false;
     } else {
       //打开side
@@ -532,7 +531,6 @@ class _BetterPlayerMaterialControlsState
         ),
       ),
       onTap: () {
-        print(_sideShow);
         if (_sideShow) {
           toggleSide();
           return;
@@ -546,7 +544,6 @@ class _BetterPlayerMaterialControlsState
           } else
             _cancelAndRestartTimer();
         } else {
-          print('callme----------');
           _onPlayPause();
 
           setState(() {
@@ -711,7 +708,12 @@ class _BetterPlayerMaterialControlsState
   }
 
   void _onPlayPause() {
-    bool isFinished = _latestValue.position >= _latestValue.duration;
+    if (_sideShow) {
+      toggleSide();
+      return;
+    }
+
+    final bool isFinished = _latestValue.position >= _latestValue.duration;
 
     setState(() {
       if (_controller.value.isPlaying) {
