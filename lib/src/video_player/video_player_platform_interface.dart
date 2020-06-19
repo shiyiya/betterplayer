@@ -209,7 +209,7 @@ class DataSource {
 
   /// Key to compare DataSource
   String get key {
-    uri ?? ((package ?? "") + ":" + asset) + ":" + (formatHint ?? "");
+    // uri ?? ((package ?? "") + ":" + asset) + ":" + (formatHint ?? "");
     String result = "";
 
     if (uri != null && uri.isNotEmpty) {

@@ -142,7 +142,7 @@ class _BetterPlayerSubtitlesDrawerState
   }
 
   Widget _getTextWithStroke(String subtitleText) {
-    if (subtitleText == null){
+    if (subtitleText == null) {
       subtitleText = "";
     }
     String subtitleCenteredText = "<center>$subtitleText</center>";
@@ -157,10 +157,11 @@ class _BetterPlayerSubtitlesDrawerState
   Widget _buildHtmlWidget(String text, TextStyle textStyle) {
     assert(text != null);
     assert(textStyle != null);
-    return HtmlWidget(text,
-        textStyle: textStyle,
-        bodyPadding: const EdgeInsets.all(0),
-        tableCellPadding: const EdgeInsets.all(0));
+    return HtmlWidget(
+      text,
+      textStyle: textStyle,
+      tableCellPadding: const EdgeInsets.all(0),
+    );
   }
 
   BetterPlayerSubtitlesConfiguration setupDefaultConfiguration() {
