@@ -314,19 +314,23 @@ class _BetterPlayerMaterialControlsState
           _betterPlayerController.videoPlayerController.value.errorDescription);
     } else {
       return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.warning,
-              color: _controlsConfiguration.iconsColor,
-              size: 42,
-            ),
-            Text(
-              _controlsConfiguration.defaultErrorText,
-              style: TextStyle(color: _controlsConfiguration.textColor),
-            ),
-          ],
+        child: Container(
+          color: Colors.black.withOpacity(0.4),
+          padding: EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.warning,
+                color: _controlsConfiguration.iconsColor,
+                size: 42,
+              ),
+              Text(
+                _controlsConfiguration.defaultErrorText,
+                style: TextStyle(color: _controlsConfiguration.textColor),
+              ),
+            ],
+          ),
         ),
       );
     }
@@ -784,9 +788,12 @@ class _BetterPlayerMaterialControlsState
   }
 
   Widget _buildLoadingWidget() {
-    return CircularProgressIndicator(
-      valueColor:
-          AlwaysStoppedAnimation<Color>(_controlsConfiguration.controlBarColor),
+    return AbsorbPointer(
+      absorbing: false,
+      child: CircularProgressIndicator(
+        valueColor: AlwaysStoppedAnimation<Color>(
+            _controlsConfiguration.controlBarColor),
+      ),
     );
   }
 }
