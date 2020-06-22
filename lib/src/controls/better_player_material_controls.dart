@@ -315,6 +315,9 @@ class _BetterPlayerMaterialControlsState
     } else {
       return Center(
         child: Container(
+          height: (MediaQuery.of(context).size.width /
+                  _betterPlayerController.aspectRatio) /
+              2,
           color: Colors.black.withOpacity(0.4),
           padding: EdgeInsets.all(20.0),
           child: Column(
@@ -789,7 +792,7 @@ class _BetterPlayerMaterialControlsState
 
   Widget _buildLoadingWidget() {
     return AbsorbPointer(
-      absorbing: false,
+      absorbing: true,
       child: CircularProgressIndicator(
         valueColor: AlwaysStoppedAnimation<Color>(
             _controlsConfiguration.controlBarColor),
