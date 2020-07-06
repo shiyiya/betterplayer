@@ -795,7 +795,8 @@ class _BetterPlayerMaterialControlsState
       absorbing: true,
       child: CircularProgressIndicator(
         valueColor: AlwaysStoppedAnimation<Color>(
-            _controlsConfiguration.controlBarColor),
+          _controlsConfiguration.iconsColor,
+        ),
       ),
     );
   }
