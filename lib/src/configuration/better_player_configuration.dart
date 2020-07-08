@@ -6,6 +6,8 @@ import 'package:flutter/services.dart';
 
 import 'better_player_event.dart';
 
+typedef GanerateVideoFn = Future<BetterPlayerListItem> Function(int i);
+
 class BetterPlayerConfiguration {
   /// Play the video as soon as it's displayed
   final bool autoPlay;
@@ -60,26 +62,42 @@ class BetterPlayerConfiguration {
   ///Defines controls configuration
   final BetterPlayerControlsConfiguration controlsConfiguration;
 
-  const BetterPlayerConfiguration(
-      {this.aspectRatio,
-      this.autoPlay = false,
-      this.startAt,
-      this.looping = false,
-      this.fullScreenByDefault = false,
-      this.placeholder,
-      this.overlay,
-      this.showControlsOnInitialize = true,
-      this.errorBuilder,
-      this.allowedScreenSleep = true,
-      this.systemOverlaysAfterFullScreen = SystemUiOverlay.values,
-      this.deviceOrientationsAfterFullScreen = const [
-        DeviceOrientation.portraitUp,
-        DeviceOrientation.portraitDown,
-        DeviceOrientation.landscapeLeft,
-        DeviceOrientation.landscapeRight,
-      ],
-      this.routePageBuilder,
-      this.eventListener,
-      this.subtitlesConfiguration = const BetterPlayerSubtitlesConfiguration(),
-      this.controlsConfiguration = const BetterPlayerControlsConfiguration()});
+  final int currentVideoIndex;
+
+  final int videoListLen;
+
+  final GanerateVideoFn ganerateVideoFn;
+
+  const BetterPlayerConfiguration({
+    this.aspectRatio,
+    this.autoPlay = false,
+    this.startAt,
+    this.looping = false,
+    this.fullScreenByDefault = false,
+    this.placeholder,
+    this.overlay,
+    this.showControlsOnInitialize = true,
+    this.errorBuilder,
+    this.allowedScreenSleep = true,
+    this.systemOverlaysAfterFullScreen = SystemUiOverlay.values,
+    this.deviceOrientationsAfterFullScreen = const [
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ],
+    this.routePageBuilder,
+    this.eventListener,
+    this.subtitlesConfiguration = const BetterPlayerSubtitlesConfiguration(),
+    this.controlsConfiguration = const BetterPlayerControlsConfiguration(),
+    this.currentVideoIndex = 1,
+    this.videoListLen = 1,
+    this.ganerateVideoFn,
+  });
+}
+
+class BetterPlayerListItem {
+  String title;
+  String src;
+  BetterPlayerListItem(this.title, this.src);
 }

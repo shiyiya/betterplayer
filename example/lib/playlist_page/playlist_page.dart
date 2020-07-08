@@ -14,24 +14,14 @@ class _PlaylistPageState extends State<PlaylistPage> {
   List dataSourceList = List<BetterPlayerDataSource>();
 
   Future<List<BetterPlayerDataSource>> setupData() async {
-    await _saveAssetToFile();
-
-    final directory = await getApplicationDocumentsDirectory();
-
     dataSourceList.add(BetterPlayerDataSource(
-        BetterPlayerDataSourceType.NETWORK,
-        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
-        subtitles: BetterPlayerSubtitlesSource(
-            type: BetterPlayerSubtitlesSourceType.FILE,
-            url: "${directory.path}/example_subtitles.srt")));
+      BetterPlayerDataSourceType.NETWORK,
+      "https://gss3.baidu.com/6LZ0ej3k1Qd3ote6lo7D0j9wehsv/tieba-smallvideo/6331_39ecb93c60353cc2d0187af6d8201100.mp4",
+    ));
 
     dataSourceList.add(BetterPlayerDataSource(
         BetterPlayerDataSourceType.NETWORK,
-        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"));
-    dataSourceList.add(BetterPlayerDataSource(
-        BetterPlayerDataSourceType.NETWORK,
-        "http://sample.vodobox.com/skate_phantom_flex_4k/skate_phantom_flex_4k.m3u8",
-        liveStream: true));
+        "https://vt1.doubanio.com/201902111139/0c06a85c600b915d8c9cbdbbaf06ba9f/view/movie/M/302420330.mp4"));
 
     return dataSourceList;
   }
@@ -52,28 +42,21 @@ class _PlaylistPageState extends State<PlaylistPage> {
         if (!snapshot.hasData) {
           return Text("Building!");
         } else {
-          return ListView(children: [
-            Padding(
-              padding: EdgeInsets.all(8),
-              child: Text(
-                  "Playlist widget will load automatically next video once current "
-                  "finishes. User can't use player controls when video is changing."),
+          return AspectRatio(
+            child: BetterPlayerPlaylist(
+              betterPlayerConfiguration: BetterPlayerConfiguration(
+                  autoPlay: false,
+                  subtitlesConfiguration:
+                      BetterPlayerSubtitlesConfiguration(fontSize: 10),
+                  controlsConfiguration:
+                      BetterPlayerControlsConfiguration.cupertino()),
+              betterPlayerPlaylistConfiguration:
+                  BetterPlayerPlaylistConfiguration(
+                      nextVideoDelay: Duration(seconds: 30)),
+              betterPlayerDataSourceList: snapshot.data,
             ),
-            AspectRatio(
-              child: BetterPlayerPlaylist(
-                betterPlayerConfiguration: BetterPlayerConfiguration(
-                    autoPlay: false,
-                    subtitlesConfiguration:
-                        BetterPlayerSubtitlesConfiguration(fontSize: 10),
-                    controlsConfiguration:
-                        BetterPlayerControlsConfiguration.cupertino()),
-                betterPlayerPlaylistConfiguration:
-                    BetterPlayerPlaylistConfiguration(nextVideoDelay: Duration(seconds: 30)),
-                betterPlayerDataSourceList: snapshot.data,
-              ),
-              aspectRatio: 16 / 9,
-            )
-          ]);
+            aspectRatio: 16 / 9,
+          );
         }
       },
     );
