@@ -29,10 +29,11 @@ class _GeneralPageState extends State<GeneralPage> {
         controlsConfiguration: BetterPlayerControlsConfiguration(
           enableProgressText: true,
           enableMute: false,
+          iconsColor: Colors.white,
         ),
       ),
       betterPlayerDataSource: dataSource,
-      videoListLen: 10,
+      videoListLen: 100,
       ganerateVideoFn: (i) async {
         print('$i');
       },

@@ -74,9 +74,9 @@ class BetterPlayerController extends ChangeNotifier {
   StreamController<int> nextVideoTimeStreamController =
       StreamController.broadcast();
 
-  int currentVideoIndex = 0;
+  int currentVideoIndex;
 
-  int videoListLen = 1;
+  int videoListLen;
 
   final GanerateVideoFn ganerateVideoFn;
 
@@ -84,7 +84,8 @@ class BetterPlayerController extends ChangeNotifier {
     this.betterPlayerConfiguration, {
     this.betterPlayerPlaylistConfiguration,
     this.betterPlayerDataSource,
-    this.videoListLen,
+    this.videoListLen = 1,
+    this.currentVideoIndex = 0,
     this.ganerateVideoFn,
   }) : assert(betterPlayerConfiguration != null,
             "BetterPlayerConfiguration can't be null") {

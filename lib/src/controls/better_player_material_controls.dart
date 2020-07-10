@@ -54,19 +54,37 @@ class _BetterPlayerMaterialControlsState
   AnimationController sideVideoListAnimationController;
   Animation<Offset> sideVideoListAnimation;
 
+  bool isLock = false;
+  bool showLockIcon = false;
+
   void toggleHideStuff() {
     if (_sideShow) {
       toggleSide();
       return;
     }
-
-    if (!_hideStuff) {
-      _startHideTimer();
+    if (_videoListsideShow) {
+      toggleVideoSide();
       return;
     }
+
     setState(() {
       _hideStuff = !_hideStuff;
     });
+
+    if (_hideStuff) {
+      _startHideTimer();
+    }
+  }
+
+  void toggleLock() {
+    isLock = !isLock;
+    if (isLock) showLockIcon = true;
+    setState(() {});
+  }
+
+  void toggleLockIconShow() {
+    showLockIcon = !showLockIcon;
+    setState(() {});
   }
 
   @override
@@ -74,152 +92,194 @@ class _BetterPlayerMaterialControlsState
     if (_latestValue.hasError) {
       return _buildErrorWidget();
     }
-    return MouseRegion(
-      onHover: (_) {
-        _cancelAndRestartTimer();
-      },
-      child: Stack(
-        children: <Widget>[
-          Column(
-            children: <Widget>[
-              AbsorbPointer(
-                absorbing: _hideStuff,
-                child: _buildAppBar(context),
-              ),
-              Expanded(
-                child: GestureDetector(
-                  onTap: toggleHideStuff,
-                  onDoubleTap: _onPlayPause,
-
-                  //垂直
-                  onVerticalDragDown: _onVerticalDragDown,
-                  onVerticalDragStart: _onVerticalDragStart,
-                  onVerticalDragUpdate: _onVerticalDragUpdate,
-                  onVerticalDragEnd: _onVerticalDragEnd,
-
-                  //水平滑动
-                  onHorizontalDragStart: _onHorizontalDragStart,
-                  onHorizontalDragDown: _onHorizontalDragDown,
-                  onHorizontalDragUpdate: _onHorizontalDragUpdate,
-                  onHorizontalDragEnd: _onHorizontalDragEnd,
-                  child: Stack(
-                    children: <Widget>[
-                      _isLoading()
-                          ? Center(child: _buildLoadingWidget())
-                          : _buildHitArea(),
-                      if (showTimeLine) _buildTimeLine(),
-                      if (showBrightness)
-                        Center(
-                          child: LinearProgress(
-                            brighting,
-                            Icons.brightness_6,
-                            _controlsConfiguration.iconsColor,
-                          ),
-                        ),
-                      if (showVolTip)
-                        Center(
-                          child: LinearProgress(
-                            volProgress,
-                            Icons.volume_up,
-                            _controlsConfiguration.iconsColor,
-                          ),
-                        )
-                    ],
-                  ),
-                ),
-              ),
-              AbsorbPointer(
-                absorbing: _hideStuff,
-                child: _buildBottomBar(context),
-              ),
-            ],
-          ),
-          Align(
-            alignment: Alignment.topRight,
-            child: SlideTransition(
-              position: sideAnimation,
+    return isLock
+        ? AnimatedOpacity(
+            opacity: showLockIcon ? 1.0 : 0.0,
+            duration: _controlsConfiguration.controlsHideTime,
+            child: GestureDetector(
+              onTap: toggleLockIconShow,
               child: Container(
-                alignment: Alignment.topRight,
-                height: double.infinity,
-                width: MediaQuery.of(context).size.width / 5,
-                color: Colors.black.withOpacity(0.6),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [2.0, 1.5, 1.25, 1.0, 0.75, 0.5]
-                      .map((e) => Container(
-                            alignment: Alignment.center,
-                            child: InkWell(
-                              onTap: () {
-                                _controller.setSpeed(e);
-                                toggleSide();
-                              },
-                              child: Text(
-                                '$e x',
-                                style: TextStyle(
-                                  color: _controller.value.speed == e
-                                      ? _controlsConfiguration.textColor
-                                          .withRed(5)
-                                      : _controlsConfiguration.textColor,
-                                ),
-                              ),
-                            ),
-                          ))
-                      .toList(),
+                alignment: Alignment.centerLeft,
+                child: IconButton(
+                  icon: Icon(Icons.lock),
+                  color: _controlsConfiguration.iconsColor,
+                  onPressed: toggleLock,
                 ),
               ),
             ),
-          ),
-          Align(
-            alignment: Alignment.topRight,
-            child: SlideTransition(
-              position: sideVideoListAnimation,
-              child: Container(
-                height: double.infinity,
-                width: MediaQuery.of(context).size.width / 3,
-                color: Colors.black.withOpacity(0.6),
-                child: Wrap(
-                  children: [
-                    for (var i = 0;
-                        i < _betterPlayerController.videoListLen;
-                        i++)
-                      InkWell(
-                        onTap: () {
-                          sideVideoListAnimationController.reverse();
-                          _betterPlayerController.currentVideoIndex = i;
-                          _betterPlayerController.ganerateVideoFn(i);
-                          setState(() {});
-                        },
-                        child: Container(
-                          padding: EdgeInsets.all(20.0),
-                          decoration:
-                              _betterPlayerController.currentVideoIndex == i
-                                  ? BoxDecoration(
-                                      border: Border.all(
-                                      color: _controlsConfiguration.textColor
-                                          .withRed(5),
-                                      width: 2,
-                                    ))
-                                  : null,
-                          child: Text(
-                            '${i + 1}',
-                            style: TextStyle(
-                              color:
-                                  _betterPlayerController.currentVideoIndex == i
-                                      ? _controlsConfiguration.textColor
-                                          .withRed(5)
-                                      : _controlsConfiguration.textColor,
-                            ),
+          )
+        : MouseRegion(
+            onHover: (_) {
+              _cancelAndRestartTimer();
+            },
+            child: Stack(
+              children: <Widget>[
+                Column(
+                  children: <Widget>[
+                    AbsorbPointer(
+                      absorbing: _hideStuff,
+                      child: _buildAppBar(context),
+                    ),
+                    if (!isLock)
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: toggleHideStuff,
+                          onDoubleTap: _onPlayPause,
+
+                          //垂直
+                          onVerticalDragDown: _onVerticalDragDown,
+                          onVerticalDragStart: _onVerticalDragStart,
+                          onVerticalDragUpdate: _onVerticalDragUpdate,
+                          onVerticalDragEnd: _onVerticalDragEnd,
+
+                          //水平滑动
+                          onHorizontalDragStart: _onHorizontalDragStart,
+                          onHorizontalDragDown: _onHorizontalDragDown,
+                          onHorizontalDragUpdate: _onHorizontalDragUpdate,
+                          onHorizontalDragEnd: _onHorizontalDragEnd,
+                          child: Stack(
+                            children: <Widget>[
+                              _isLoading()
+                                  ? _buildLoadingWidget()
+                                  : _buildHitArea(),
+                              if (showTimeLine) _buildTimeLine(),
+                              if (showBrightness)
+                                Center(
+                                  child: LinearProgress(
+                                    brighting,
+                                    Icons.brightness_6,
+                                    _controlsConfiguration.iconsColor,
+                                  ),
+                                ),
+                              if (showVolTip)
+                                Center(
+                                  child: LinearProgress(
+                                    volProgress,
+                                    Icons.volume_up,
+                                    _controlsConfiguration.iconsColor,
+                                  ),
+                                ),
+                              if (_betterPlayerController.isFullScreen)
+                                AnimatedOpacity(
+                                  opacity: _hideStuff ? 0.0 : 1.0,
+                                  duration:
+                                      _controlsConfiguration.controlsHideTime,
+                                  child: Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: IconButton(
+                                      icon: Icon(Icons.lock),
+                                      color: _controlsConfiguration.iconsColor,
+                                      onPressed: toggleLock,
+                                    ),
+                                  ),
+                                ),
+                            ],
                           ),
                         ),
-                      )
+                      ),
+                    if (!isLock)
+                      AbsorbPointer(
+                        absorbing: _hideStuff,
+                        child: _buildBottomBar(context),
+                      ),
                   ],
                 ),
-              ),
+                Align(
+                  alignment: Alignment.topRight,
+                  child: SlideTransition(
+                    position: sideAnimation,
+                    child: Container(
+                      alignment: Alignment.topRight,
+                      height: double.infinity,
+                      width: MediaQuery.of(context).size.width / 5,
+                      color: Colors.black.withOpacity(0.6),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [2.0, 1.5, 1.25, 1.0, 0.75, 0.5]
+                            .map((e) => Container(
+                                  alignment: Alignment.center,
+                                  child: InkWell(
+                                    onTap: () {
+                                      _controller.setSpeed(e);
+                                      toggleSide();
+                                    },
+                                    child: Text(
+                                      '$e x',
+                                      style: TextStyle(
+                                        color: _controller.value.speed == e
+                                            ? _controlsConfiguration.textColor
+                                                .withRed(5)
+                                            : _controlsConfiguration.textColor,
+                                      ),
+                                    ),
+                                  ),
+                                ))
+                            .toList(),
+                      ),
+                    ),
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.topRight,
+                  child: SlideTransition(
+                    position: sideVideoListAnimation,
+                    child: Container(
+                      height: MediaQuery.of(context).size.height,
+                      width: MediaQuery.of(context).size.width / 3,
+                      color: Colors.black.withOpacity(0.6),
+                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      child: SingleChildScrollView(
+                        child: Wrap(
+                          alignment: WrapAlignment.spaceBetween,
+                          children: [
+                            for (var i = 0;
+                                i < _betterPlayerController.videoListLen;
+                                i++)
+                              InkWell(
+                                onTap: () {
+                                  toggleVideoSide();
+                                  _betterPlayerController.currentVideoIndex = i;
+                                  _betterPlayerController.ganerateVideoFn(i);
+
+                                  setState(() {});
+                                },
+                                child: Container(
+                                  padding: EdgeInsets.all(20.0),
+                                  decoration: _betterPlayerController
+                                              .currentVideoIndex ==
+                                          i
+                                      ? BoxDecoration(
+                                          border: Border.all(
+                                            color: _controlsConfiguration
+                                                .textColor
+                                                .withRed(5),
+                                            width: 2,
+                                          ),
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(4.0)))
+                                      : null,
+                                  child: Text(
+                                    '${i + 1}',
+                                    style: TextStyle(
+                                      color: _betterPlayerController
+                                                  .currentVideoIndex ==
+                                              i
+                                          ? _controlsConfiguration.textColor
+                                              .withRed(5)
+                                          : _controlsConfiguration.textColor,
+                                    ),
+                                  ),
+                                ),
+                              )
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ),
-        ],
-      ),
-    );
+          );
   }
 
   bool _isLoading() {
@@ -431,18 +491,31 @@ class _BetterPlayerMaterialControlsState
     );
   }
 
-  bool _sideShow = false;
+  bool _sideShow = false; // 倍速
+  bool _videoListsideShow = false;
+
+  void toggleVideoSide() {
+    if (_videoListsideShow) {
+      sideVideoListAnimationController.reverse();
+      _videoListsideShow = false;
+      return;
+    } else if (!_videoListsideShow) {
+      sideVideoListAnimationController.forward();
+      _hideStuff = true;
+      _videoListsideShow = true;
+      setState(() {});
+      return;
+    }
+  }
 
   void toggleSide() {
     if (_sideShow) {
       //关闭
       sideAnimationController.reverse();
-      sideVideoListAnimationController.reverse();
       _sideShow = false;
     } else {
       //打开side
       sideAnimationController.forward();
-      sideVideoListAnimationController.forward();
       _hideStuff = true;
       _sideShow = true;
     }
@@ -484,10 +557,7 @@ class _BetterPlayerMaterialControlsState
                     style: TextStyle(color: _controlsConfiguration.textColor),
                   ),
                 ),
-                onTap: () {
-                  _sideShow = true;
-                  sideVideoListAnimationController.forward();
-                },
+                onTap: toggleVideoSide,
               ),
             _controlsConfiguration.enableMute
                 ? _buildMuteButton(_controller)
@@ -759,7 +829,7 @@ class _BetterPlayerMaterialControlsState
     sideAnimation = Tween(begin: Offset(1, 0), end: Offset(0, 0))
         .animate(sideAnimationController);
 
-    if (_betterPlayerController.videoListLen > 1) {
+    if (_betterPlayerController.videoListLen > 0) {
       sideVideoListAnimationController = AnimationController(
           duration: const Duration(milliseconds: 200), vsync: this);
       sideVideoListAnimation = Tween(begin: Offset(1, 0), end: Offset(0, 0))
@@ -875,7 +945,9 @@ class _BetterPlayerMaterialControlsState
   Widget _buildLoadingWidget() {
     return GestureDetector(
       onTap: toggleHideStuff,
-      child: Center(
+      child: Container(
+        color: Colors.transparent,
+        alignment: Alignment.center,
         child: CircularProgressIndicator(
           valueColor: AlwaysStoppedAnimation<Color>(
             _controlsConfiguration.iconsColor,
