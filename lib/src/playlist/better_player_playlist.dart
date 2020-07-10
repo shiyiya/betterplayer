@@ -11,13 +11,15 @@ class BetterPlayerPlaylist extends StatefulWidget {
   final List<BetterPlayerDataSource> betterPlayerDataSourceList;
   final BetterPlayerConfiguration betterPlayerConfiguration;
   final BetterPlayerPlaylistConfiguration betterPlayerPlaylistConfiguration;
+  final BetterPlayerController controller;
 
-  BetterPlayerPlaylist(
-      {Key key,
-      this.betterPlayerDataSourceList,
-      this.betterPlayerConfiguration,
-      this.betterPlayerPlaylistConfiguration})
-      : assert(betterPlayerDataSourceList != null,
+  BetterPlayerPlaylist({
+    Key key,
+    this.betterPlayerDataSourceList,
+    this.betterPlayerConfiguration,
+    this.betterPlayerPlaylistConfiguration,
+    this.controller,
+  })  : assert(betterPlayerDataSourceList != null,
             "BetterPlayerDataSourceList can't be null or empty"),
         assert(betterPlayerConfiguration != null,
             "BetterPlayerConfiguration can't be null"),
@@ -77,10 +79,11 @@ class _BetterPlayerPlaylistState extends State<BetterPlayerPlaylist> {
   }
 
   void _setupPlayer() {
-    _controller = BetterPlayerController(widget.betterPlayerConfiguration,
-        betterPlayerPlaylistConfiguration:
-            widget.betterPlayerPlaylistConfiguration,
-        betterPlayerDataSource: _currentSource);
+    _controller = widget.controller ??
+        BetterPlayerController(widget.betterPlayerConfiguration,
+            betterPlayerPlaylistConfiguration:
+                widget.betterPlayerPlaylistConfiguration,
+            betterPlayerDataSource: _currentSource);
 
     _controller.addEventsListener((event) async {
       if (event.betterPlayerEventType == BetterPlayerEventType.FINISHED) {
