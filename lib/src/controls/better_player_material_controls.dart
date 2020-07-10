@@ -428,8 +428,11 @@ class _BetterPlayerMaterialControlsState
         onTap: toggleHideStuff,
         child: Container(
           alignment: Alignment.center,
-          color: Colors.black.withOpacity(0.4),
-          padding: EdgeInsets.all(20.0),
+          decoration: BoxDecoration(
+            borderRadius: Radius.circular(5.0),
+            color: Colors.black.withOpacity(0.4),
+            padding: EdgeInsets.all(20.0),
+          ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -618,8 +621,10 @@ class _BetterPlayerMaterialControlsState
         padding: _betterPlayerController.isFullScreen
             ? EdgeInsets.all(20)
             : EdgeInsets.all(8),
-        color: Colors.black.withOpacity(0.6),
-        decoration: BoxDecoration(borderRadius: Radius.circular(5.0)),
+        decoration: BoxDecoration(
+          borderRadius: Radius.circular(5.0),
+          color: Colors.black.withOpacity(0.6),
+        ),
         child: Text(
           '${formatDuration(currentPlayerPosition + Duration(seconds: horizontalDragTime.toInt()))} / ${formatDuration(duration)}',
           style: TextStyle(color: _controlsConfiguration.textColor),
