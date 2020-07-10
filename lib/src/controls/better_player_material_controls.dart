@@ -241,10 +241,7 @@ class _BetterPlayerMaterialControlsState
                               InkWell(
                                 onTap: () {
                                   toggleVideoSide();
-                                  _betterPlayerController.currentVideoIndex = i;
                                   _betterPlayerController.ganerateVideoFn(i);
-
-                                  setState(() {});
                                 },
                                 child: Container(
                                   padding: EdgeInsets.all(20.0),
@@ -427,23 +424,26 @@ class _BetterPlayerMaterialControlsState
       return _betterPlayerController.errorBuilder(context,
           _betterPlayerController.videoPlayerController.value.errorDescription);
     } else {
-      return Container(
-        alignment: Alignment.center,
-        color: Colors.black.withOpacity(0.4),
-        padding: EdgeInsets.all(20.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.warning,
-              color: _controlsConfiguration.iconsColor,
-              size: 42,
-            ),
-            Text(
-              _controlsConfiguration.defaultErrorText,
-              style: TextStyle(color: _controlsConfiguration.textColor),
-            ),
-          ],
+      return GestureDetector(
+        onTap: toggleHideStuff,
+        child: Container(
+          alignment: Alignment.center,
+          color: Colors.black.withOpacity(0.4),
+          padding: EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.warning,
+                color: _controlsConfiguration.iconsColor,
+                size: 42,
+              ),
+              Text(
+                _controlsConfiguration.defaultErrorText,
+                style: TextStyle(color: _controlsConfiguration.textColor),
+              ),
+            ],
+          ),
         ),
       );
     }
@@ -619,6 +619,7 @@ class _BetterPlayerMaterialControlsState
             ? EdgeInsets.all(20)
             : EdgeInsets.all(8),
         color: Colors.black.withOpacity(0.6),
+        decoration: BoxDecoration(borderRadius: Radius.circular(5.0)),
         child: Text(
           '${formatDuration(currentPlayerPosition + Duration(seconds: horizontalDragTime.toInt()))} / ${formatDuration(duration)}',
           style: TextStyle(color: _controlsConfiguration.textColor),
