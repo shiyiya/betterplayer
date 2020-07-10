@@ -174,7 +174,6 @@ class _BetterPlayerMaterialControlsState
             child: SlideTransition(
               position: sideVideoListAnimation,
               child: Container(
-                alignment: Alignment.topRight,
                 height: double.infinity,
                 width: MediaQuery.of(context).size.width / 3,
                 color: Colors.black.withOpacity(0.6),
