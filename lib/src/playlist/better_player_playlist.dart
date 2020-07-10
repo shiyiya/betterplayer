@@ -15,17 +15,11 @@ class BetterPlayerPlaylist extends StatefulWidget {
 
   BetterPlayerPlaylist({
     Key key,
-    this.betterPlayerDataSourceList,
+    @required this.betterPlayerDataSourceList,
     this.betterPlayerConfiguration,
-    this.betterPlayerPlaylistConfiguration,
+    this.betterPlayerPlaylistConfiguration, //传递 controller 则不需要
     this.controller,
-  })  : assert(betterPlayerDataSourceList != null,
-            "BetterPlayerDataSourceList can't be null or empty"),
-        assert(betterPlayerConfiguration != null,
-            "BetterPlayerConfiguration can't be null"),
-        assert(betterPlayerPlaylistConfiguration != null,
-            "BetterPlayerPlaylistConfiguration can't be null"),
-        super(key: key);
+  }) : super(key: key);
 
   @override
   _BetterPlayerPlaylistState createState() => _BetterPlayerPlaylistState();
