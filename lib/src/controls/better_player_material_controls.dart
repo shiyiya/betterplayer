@@ -71,7 +71,7 @@ class _BetterPlayerMaterialControlsState
       _hideStuff = !_hideStuff;
     });
 
-    if (_hideStuff) {
+    if (!_hideStuff) {
       _startHideTimer();
     }
   }
@@ -89,9 +89,6 @@ class _BetterPlayerMaterialControlsState
 
   @override
   Widget build(BuildContext context) {
-    if (_latestValue.hasError) {
-      return _buildErrorWidget();
-    }
     return isLock
         ? AnimatedOpacity(
             opacity: showLockIcon ? 1.0 : 0.0,
@@ -100,6 +97,7 @@ class _BetterPlayerMaterialControlsState
               onTap: toggleLockIconShow,
               child: Container(
                 alignment: Alignment.centerLeft,
+                color: Colors.transparent,
                 child: IconButton(
                   icon: Icon(Icons.lock),
                   color: _controlsConfiguration.iconsColor,
@@ -122,60 +120,65 @@ class _BetterPlayerMaterialControlsState
                     ),
                     if (!isLock)
                       Expanded(
-                        child: GestureDetector(
-                          onTap: toggleHideStuff,
-                          onDoubleTap: _onPlayPause,
+                        child: _latestValue.hasError
+                            ? _buildErrorWidget()
+                            : GestureDetector(
+                                onTap: toggleHideStuff,
+                                onDoubleTap: _onPlayPause,
 
-                          //垂直
-                          onVerticalDragDown: _onVerticalDragDown,
-                          onVerticalDragStart: _onVerticalDragStart,
-                          onVerticalDragUpdate: _onVerticalDragUpdate,
-                          onVerticalDragEnd: _onVerticalDragEnd,
+                                //垂直
+                                onVerticalDragDown: _onVerticalDragDown,
+                                onVerticalDragStart: _onVerticalDragStart,
+                                onVerticalDragUpdate: _onVerticalDragUpdate,
+                                onVerticalDragEnd: _onVerticalDragEnd,
 
-                          //水平滑动
-                          onHorizontalDragStart: _onHorizontalDragStart,
-                          onHorizontalDragDown: _onHorizontalDragDown,
-                          onHorizontalDragUpdate: _onHorizontalDragUpdate,
-                          onHorizontalDragEnd: _onHorizontalDragEnd,
-                          child: Stack(
-                            children: <Widget>[
-                              _isLoading()
-                                  ? _buildLoadingWidget()
-                                  : _buildHitArea(),
-                              if (showTimeLine) _buildTimeLine(),
-                              if (showBrightness)
-                                Center(
-                                  child: LinearProgress(
-                                    brighting,
-                                    Icons.brightness_6,
-                                    _controlsConfiguration.iconsColor,
-                                  ),
+                                //水平滑动
+                                onHorizontalDragStart: _onHorizontalDragStart,
+                                onHorizontalDragDown: _onHorizontalDragDown,
+                                onHorizontalDragUpdate: _onHorizontalDragUpdate,
+                                onHorizontalDragEnd: _onHorizontalDragEnd,
+                                child: Stack(
+                                  children: <Widget>[
+                                    _isLoading()
+                                        ? _buildLoadingWidget()
+                                        : _buildHitArea(),
+                                    if (showTimeLine) _buildTimeLine(),
+                                    if (showBrightness)
+                                      Center(
+                                        child: LinearProgress(
+                                          brighting,
+                                          Icons.brightness_6,
+                                          _controlsConfiguration.iconsColor,
+                                          _betterPlayerController.isFullScreen,
+                                        ),
+                                      ),
+                                    if (showVolTip)
+                                      Center(
+                                        child: LinearProgress(
+                                          volProgress,
+                                          Icons.volume_up,
+                                          _controlsConfiguration.iconsColor,
+                                          _betterPlayerController.isFullScreen,
+                                        ),
+                                      ),
+                                    if (_betterPlayerController.isFullScreen)
+                                      AnimatedOpacity(
+                                        opacity: _hideStuff ? 0.0 : 1.0,
+                                        duration: _controlsConfiguration
+                                            .controlsHideTime,
+                                        child: Align(
+                                          alignment: Alignment.centerLeft,
+                                          child: IconButton(
+                                            icon: Icon(Icons.lock),
+                                            color: _controlsConfiguration
+                                                .iconsColor,
+                                            onPressed: toggleLock,
+                                          ),
+                                        ),
+                                      ),
+                                  ],
                                 ),
-                              if (showVolTip)
-                                Center(
-                                  child: LinearProgress(
-                                    volProgress,
-                                    Icons.volume_up,
-                                    _controlsConfiguration.iconsColor,
-                                  ),
-                                ),
-                              if (_betterPlayerController.isFullScreen)
-                                AnimatedOpacity(
-                                  opacity: _hideStuff ? 0.0 : 1.0,
-                                  duration:
-                                      _controlsConfiguration.controlsHideTime,
-                                  child: Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: IconButton(
-                                      icon: Icon(Icons.lock),
-                                      color: _controlsConfiguration.iconsColor,
-                                      onPressed: toggleLock,
-                                    ),
-                                  ),
-                                ),
-                            ],
-                          ),
-                        ),
+                              ),
                       ),
                     if (!isLock)
                       AbsorbPointer(
@@ -424,27 +427,23 @@ class _BetterPlayerMaterialControlsState
       return _betterPlayerController.errorBuilder(context,
           _betterPlayerController.videoPlayerController.value.errorDescription);
     } else {
-      return Center(
-        child: Container(
-          height: (MediaQuery.of(context).size.width /
-                  _betterPlayerController.aspectRatio) /
-              2,
-          color: Colors.black.withOpacity(0.4),
-          padding: EdgeInsets.all(20.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.warning,
-                color: _controlsConfiguration.iconsColor,
-                size: 42,
-              ),
-              Text(
-                _controlsConfiguration.defaultErrorText,
-                style: TextStyle(color: _controlsConfiguration.textColor),
-              ),
-            ],
-          ),
+      return Container(
+        alignment: Alignment.center,
+        color: Colors.black.withOpacity(0.4),
+        padding: EdgeInsets.all(20.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.warning,
+              color: _controlsConfiguration.iconsColor,
+              size: 42,
+            ),
+            Text(
+              _controlsConfiguration.defaultErrorText,
+              style: TextStyle(color: _controlsConfiguration.textColor),
+            ),
+          ],
         ),
       );
     }
@@ -616,15 +615,11 @@ class _BetterPlayerMaterialControlsState
         : Duration.zero;
     return Center(
       child: Container(
-        alignment: Alignment.center,
-        color: Colors.black.withOpacity(0.6),
-        width: MediaQuery.of(context).size.width / 4,
-        height: _controlsConfiguration.controlBarHeight,
-        child: Center(
-          child: Text(
-            '${formatDuration(currentPlayerPosition + Duration(seconds: horizontalDragTime.toInt()))} / ${formatDuration(duration)}',
-            style: TextStyle(color: _controlsConfiguration.textColor),
-          ),
+        padding: EdgeInsets.all(8),
+        color: Colors.red.withOpacity(0.6),
+        child: Text(
+          '${formatDuration(currentPlayerPosition + Duration(seconds: horizontalDragTime.toInt()))} / ${formatDuration(duration)}',
+          style: TextStyle(color: _controlsConfiguration.textColor),
         ),
       ),
     );
@@ -684,6 +679,10 @@ class _BetterPlayerMaterialControlsState
       onTap: () {
         if (_sideShow) {
           toggleSide();
+          return;
+        }
+        if (_videoListsideShow) {
+          toggleVideoSide();
           return;
         }
 
@@ -903,9 +902,9 @@ class _BetterPlayerMaterialControlsState
   }
 
   void _updateState() {
-    setState(() {
-      _latestValue = _controller.value;
-    });
+    _latestValue = _controller.value;
+    if (_latestValue.hasError) _hideStuff = false;
+    setState(() {});
   }
 
   Widget _buildProgressBar() {
@@ -962,8 +961,9 @@ class LinearProgress extends StatelessWidget {
   final double len;
   final IconData icon;
   final Color color;
+  final bool isFullScreen;
 
-  LinearProgress(this.len, this.icon, this.color);
+  LinearProgress(this.len, this.icon, this.color, this.isFullScreen);
 
   @override
   Widget build(BuildContext context) {
@@ -972,8 +972,10 @@ class LinearProgress extends StatelessWidget {
         color: Colors.black.withOpacity(0.5),
         borderRadius: BorderRadius.all(Radius.circular(2)),
       ),
-      width: MediaQuery.of(context).size.width / 4,
-      padding: EdgeInsets.all(5),
+      width: isFullScreen
+          ? MediaQuery.of(context).size.width / 6
+          : MediaQuery.of(context).size.width / 4,
+      padding: EdgeInsets.all(8),
       child: Row(
         children: <Widget>[
           Padding(

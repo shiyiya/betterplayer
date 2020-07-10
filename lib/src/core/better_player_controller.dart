@@ -134,6 +134,11 @@ class BetterPlayerController extends ChangeNotifier {
     await _initialize();
   }
 
+  void setupVideoListIndex(int i) {
+    currentVideoIndex = i;
+    notifyListeners();
+  }
+
   void setupAppBarTitle(String title) {
     appBarTitle = title;
     notifyListeners();
