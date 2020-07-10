@@ -615,8 +615,10 @@ class _BetterPlayerMaterialControlsState
         : Duration.zero;
     return Center(
       child: Container(
-        padding: EdgeInsets.all(8),
-        color: Colors.red.withOpacity(0.6),
+        padding: _betterPlayerController.isFullScreen
+            ? EdgeInsets.all(20)
+            : EdgeInsets.all(8),
+        color: Colors.black.withOpacity(0.6),
         child: Text(
           '${formatDuration(currentPlayerPosition + Duration(seconds: horizontalDragTime.toInt()))} / ${formatDuration(duration)}',
           style: TextStyle(color: _controlsConfiguration.textColor),
