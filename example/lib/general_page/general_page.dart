@@ -25,23 +25,18 @@ class _GeneralPageState extends State<GeneralPage> {
             url:
                 "https://dl.dropboxusercontent.com/s/71nzjo2ux3evxqk/example_subtitles.srt"));
     _betterPlayerController = BetterPlayerController(
-        BetterPlayerConfiguration(
-          controlsConfiguration: BetterPlayerControlsConfiguration(
-            enableProgressText: true,
-            enableMute: false,
-          ),
-          videoListLen: 10,
-          ganerateVideoFn: (i) async {
-            print('qqqqqqqqqqqqqqqqqqqqqqq$i');
-            if (i == 2) {
-              return BetterPlayerListItem('tititt',
-                  'https://gss3.baidu.com/6LZ0ej3k1Qd3ote6lo7D0j9wehsv/tieba-smallvideo/6331_39ecb93c60353cc2d0187af6d8201100.mp4');
-            }
-            return BetterPlayerListItem('tititt',
-                'https://gss3.baidu.com/6LZ0ej3k1Qd3ote6lo7D0j9wehsv/tieba-smallvideo/6331_39ecb93c60353cc2d0187af6d8201100.mp4');
-          },
+      BetterPlayerConfiguration(
+        controlsConfiguration: BetterPlayerControlsConfiguration(
+          enableProgressText: true,
+          enableMute: false,
         ),
-        betterPlayerDataSource: dataSource);
+      ),
+      betterPlayerDataSource: dataSource,
+      videoListLen: 10,
+      ganerateVideoFn: (i) async {
+        print('$i');
+      },
+    );
     _betterPlayerController.addEventsListener((event) {
       print("Better player event: ${event.betterPlayerEventType}");
     });

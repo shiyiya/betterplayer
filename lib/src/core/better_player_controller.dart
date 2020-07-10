@@ -74,9 +74,19 @@ class BetterPlayerController extends ChangeNotifier {
   StreamController<int> nextVideoTimeStreamController =
       StreamController.broadcast();
 
-  BetterPlayerController(this.betterPlayerConfiguration,
-      {this.betterPlayerPlaylistConfiguration, this.betterPlayerDataSource})
-      : assert(betterPlayerConfiguration != null,
+  int currentVideoIndex = 1;
+
+  int videoListLen = 1;
+
+  final GanerateVideoFn ganerateVideoFn;
+
+  BetterPlayerController(
+    this.betterPlayerConfiguration, {
+    this.betterPlayerPlaylistConfiguration,
+    this.betterPlayerDataSource,
+    this.videoListLen,
+    this.ganerateVideoFn,
+  }) : assert(betterPlayerConfiguration != null,
             "BetterPlayerConfiguration can't be null") {
     _eventListeners.add(eventListener);
     if (betterPlayerDataSource != null) {
@@ -111,7 +121,6 @@ class BetterPlayerController extends ChangeNotifier {
       case BetterPlayerDataSourceType.NETWORK:
         await videoPlayerController
             .setNetworkDataSource(betterPlayerDataSource.url);
-
         break;
       case BetterPlayerDataSourceType.FILE:
         await videoPlayerController

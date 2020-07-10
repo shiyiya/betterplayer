@@ -33,7 +33,9 @@ class BetterPlayerState extends State<BetterPlayer> {
   BetterPlayerDataSource get betterPlayerDataSource =>
       widget.controller.betterPlayerDataSource;
 
-  bool _isFullScreen = false;
+  bool _isFullScreen;
+
+  get isFullScreen => widget.controller.isFullScreen;
 
   @override
   void initState() {
@@ -63,12 +65,17 @@ class BetterPlayerState extends State<BetterPlayer> {
   }
 
   void listener() async {
-    if (widget.controller.isFullScreen && !_isFullScreen) {
-      _isFullScreen = true;
+    // if (_isFullScreen == null) {
+    //   _isFullScreen = isFullScreen;
+    // }
+
+    if (isFullScreen && (_isFullScreen == null || !_isFullScreen)) {
+      _isFullScreen = isFullScreen;
       await _pushFullScreenWidget(context);
-    } else if (_isFullScreen) {
-      Navigator.of(context, rootNavigator: true).pop();
-      _isFullScreen = false;
+    } else if (!isFullScreen) {
+      if (Navigator.of(context).canPop())
+        Navigator.of(context, rootNavigator: true).pop();
+      _isFullScreen = isFullScreen;
     }
   }
 

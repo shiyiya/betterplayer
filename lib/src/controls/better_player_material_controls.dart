@@ -10,8 +10,6 @@ import 'package:better_player/src/video_player/video_player.dart';
 import 'package:flutter/material.dart';
 import 'package:music_volume/music_volume.dart';
 import 'package:screen/screen.dart';
-// import 'package:better_player/src/configuration/better_player_data_source.dart';
-// import 'package:better_player/src/configuration/better_player_data_source_type.dart';
 
 import 'better_player_clickable_widget.dart';
 
@@ -53,8 +51,8 @@ class _BetterPlayerMaterialControlsState
   AnimationController sideAnimationController;
   Animation<Offset> sideAnimation;
 
-  // AnimationController sideVideoListAnimationController;
-  // Animation<Offset> sideVideoListAnimation;
+  AnimationController sideVideoListAnimationController;
+  Animation<Offset> sideVideoListAnimation;
 
   void toggleHideStuff() {
     if (_sideShow) {
@@ -171,66 +169,55 @@ class _BetterPlayerMaterialControlsState
               ),
             ),
           ),
-          // Align(
-          //   alignment: Alignment.topRight,
-          //   child: SlideTransition(
-          //     position: sideVideoListAnimation,
-          //     child: Container(
-          //       alignment: Alignment.topRight,
-          //       height: double.infinity,
-          //       width: MediaQuery.of(context).size.width / 3,
-          //       color: Colors.black.withOpacity(0.6),
-          //       child: Wrap(
-          //         children: [
-          //           for (var i = 0;
-          //               i <
-          //                   _betterPlayerController
-          //                       .betterPlayerConfiguration.videoListLen;
-          //               i++)
-          //             InkWell(
-          //               onTap: () async {
-          //                 final info = await _betterPlayerController
-          //                     .betterPlayerConfiguration
-          //                     .ganerateVideoFn(i);
-
-          //                 sideVideoListAnimationController.reverse();
-          //                 _betterPlayerController.setupAppBarTitle('');
-          //                 _betterPlayerController.setupDataSource(
-          //                   BetterPlayerDataSource(
-          //                       BetterPlayerDataSourceType.NETWORK, info.src),
-          //                 );
-          //               },
-          //               child: Container(
-          //                 padding: EdgeInsets.all(20.0),
-          //                 decoration: _betterPlayerController
-          //                             .betterPlayerConfiguration
-          //                             .currentVideoIndex ==
-          //                         i
-          //                     ? BoxDecoration(
-          //                         border: Border.all(
-          //                         color: _controlsConfiguration.textColor
-          //                             .withRed(5),
-          //                         width: 2,
-          //                       ))
-          //                     : null,
-          //                 child: Text(
-          //                   '$i',
-          //                   style: TextStyle(
-          //                     color: _betterPlayerController
-          //                                 .betterPlayerConfiguration
-          //                                 .currentVideoIndex ==
-          //                             i
-          //                         ? _controlsConfiguration.textColor.withRed(5)
-          //                         : _controlsConfiguration.textColor,
-          //                   ),
-          //                 ),
-          //               ),
-          //             )
-          //         ],
-          //       ),
-          //     ),
-          //   ),
-          // ),
+          Align(
+            alignment: Alignment.topRight,
+            child: SlideTransition(
+              position: sideVideoListAnimation,
+              child: Container(
+                alignment: Alignment.topRight,
+                height: double.infinity,
+                width: MediaQuery.of(context).size.width / 3,
+                color: Colors.black.withOpacity(0.6),
+                child: Wrap(
+                  children: [
+                    for (var i = 0;
+                        i < _betterPlayerController.videoListLen;
+                        i++)
+                      InkWell(
+                        onTap: () {
+                          sideVideoListAnimationController.reverse();
+                          _betterPlayerController.currentVideoIndex = i;
+                          _betterPlayerController.ganerateVideoFn(i);
+                          setState(() {});
+                        },
+                        child: Container(
+                          padding: EdgeInsets.all(20.0),
+                          decoration:
+                              _betterPlayerController.currentVideoIndex == i
+                                  ? BoxDecoration(
+                                      border: Border.all(
+                                      color: _controlsConfiguration.textColor
+                                          .withRed(5),
+                                      width: 2,
+                                    ))
+                                  : null,
+                          child: Text(
+                            '${i + 1}',
+                            style: TextStyle(
+                              color:
+                                  _betterPlayerController.currentVideoIndex == i
+                                      ? _controlsConfiguration.textColor
+                                          .withRed(5)
+                                      : _controlsConfiguration.textColor,
+                            ),
+                          ),
+                        ),
+                      )
+                  ],
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -451,12 +438,12 @@ class _BetterPlayerMaterialControlsState
     if (_sideShow) {
       //关闭
       sideAnimationController.reverse();
-      // sideVideoListAnimationController.reverse();
+      sideVideoListAnimationController.reverse();
       _sideShow = false;
     } else {
       //打开side
       sideAnimationController.forward();
-      // sideVideoListAnimationController.forward();
+      sideVideoListAnimationController.forward();
       _hideStuff = true;
       _sideShow = true;
     }
@@ -487,22 +474,22 @@ class _BetterPlayerMaterialControlsState
                 : _controlsConfiguration.enableProgressBar
                     ? _buildProgressBar()
                     : const SizedBox(),
-            // if (_betterPlayerController.isFullScreen)
-            //   BetterPlayerMaterialClickableWidget(
-            //     child: Container(
-            //       height: double.infinity,
-            //       alignment: Alignment.center,
-            //       padding: EdgeInsets.symmetric(horizontal: 20),
-            //       child: Text(
-            //         '选集',
-            //         style: TextStyle(color: _controlsConfiguration.textColor),
-            //       ),
-            //     ),
-            //     onTap: () {
-            //       _sideShow = true;
-            //       sideVideoListAnimationController.forward();
-            //     },
-            //   ),
+            if (_betterPlayerController.isFullScreen)
+              BetterPlayerMaterialClickableWidget(
+                child: Container(
+                  height: double.infinity,
+                  alignment: Alignment.center,
+                  padding: EdgeInsets.symmetric(horizontal: 20),
+                  child: Text(
+                    '选集',
+                    style: TextStyle(color: _controlsConfiguration.textColor),
+                  ),
+                ),
+                onTap: () {
+                  _sideShow = true;
+                  sideVideoListAnimationController.forward();
+                },
+              ),
             _controlsConfiguration.enableMute
                 ? _buildMuteButton(_controller)
                 : const SizedBox(),
@@ -773,12 +760,12 @@ class _BetterPlayerMaterialControlsState
     sideAnimation = Tween(begin: Offset(1, 0), end: Offset(0, 0))
         .animate(sideAnimationController);
 
-    // if (_betterPlayerController.betterPlayerConfiguration.videoListLen > 1) {
-    //   sideVideoListAnimationController = AnimationController(
-    //       duration: const Duration(milliseconds: 200), vsync: this);
-    //   sideVideoListAnimation = Tween(begin: Offset(1, 0), end: Offset(0, 0))
-    //       .animate(sideVideoListAnimationController);
-    // }
+    if (_betterPlayerController.videoListLen > 1) {
+      sideVideoListAnimationController = AnimationController(
+          duration: const Duration(milliseconds: 200), vsync: this);
+      sideVideoListAnimation = Tween(begin: Offset(1, 0), end: Offset(0, 0))
+          .animate(sideVideoListAnimationController);
+    }
 
     _updateState();
 
@@ -887,11 +874,13 @@ class _BetterPlayerMaterialControlsState
   }
 
   Widget _buildLoadingWidget() {
-    return AbsorbPointer(
-      absorbing: true,
-      child: CircularProgressIndicator(
-        valueColor: AlwaysStoppedAnimation<Color>(
-          _controlsConfiguration.iconsColor,
+    return GestureDetector(
+      onTap: toggleHideStuff,
+      child: Center(
+        child: CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(
+            _controlsConfiguration.iconsColor,
+          ),
         ),
       ),
     );

@@ -6,7 +6,7 @@ import 'package:flutter/services.dart';
 
 import 'better_player_event.dart';
 
-typedef GanerateVideoFn = Future<BetterPlayerListItem> Function(int i);
+typedef GanerateVideoFn = Function(int i);
 
 class BetterPlayerConfiguration {
   /// Play the video as soon as it's displayed
@@ -62,12 +62,6 @@ class BetterPlayerConfiguration {
   ///Defines controls configuration
   final BetterPlayerControlsConfiguration controlsConfiguration;
 
-  final int currentVideoIndex;
-
-  final int videoListLen;
-
-  final GanerateVideoFn ganerateVideoFn;
-
   const BetterPlayerConfiguration({
     this.aspectRatio,
     this.autoPlay = false,
@@ -90,14 +84,5 @@ class BetterPlayerConfiguration {
     this.eventListener,
     this.subtitlesConfiguration = const BetterPlayerSubtitlesConfiguration(),
     this.controlsConfiguration = const BetterPlayerControlsConfiguration(),
-    this.currentVideoIndex = 1,
-    this.videoListLen = 1,
-    this.ganerateVideoFn,
   });
-}
-
-class BetterPlayerListItem {
-  String title;
-  String src;
-  BetterPlayerListItem(this.title, this.src);
 }
