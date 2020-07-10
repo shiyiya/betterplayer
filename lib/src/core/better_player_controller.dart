@@ -74,7 +74,7 @@ class BetterPlayerController extends ChangeNotifier {
   StreamController<int> nextVideoTimeStreamController =
       StreamController.broadcast();
 
-  int currentVideoIndex = 1;
+  int currentVideoIndex = 0;
 
   int videoListLen = 1;
 
