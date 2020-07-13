@@ -48,10 +48,10 @@ class _BetterPlayerWithControlsState extends State<BetterPlayerWithControls> {
 
     return Center(
       child: Container(
-        width: MediaQuery.of(context).size.width,
+        width: double.infinity,
+        color: Colors.black,
         child: AspectRatio(
-          aspectRatio: betterPlayerController.aspectRatio ??
-              _calculateAspectRatio(context),
+          aspectRatio: betterPlayerController.aspectRatio,
           child: _buildPlayerWithControls(betterPlayerController, context),
         ),
       ),
@@ -64,12 +64,10 @@ class _BetterPlayerWithControlsState extends State<BetterPlayerWithControls> {
       child: Stack(
         children: <Widget>[
           betterPlayerController.placeholder ?? Container(),
-          Center(
-            child: AspectRatio(
-              aspectRatio: betterPlayerController.aspectRatio ??
-                  _calculateAspectRatio(context),
-              child: VideoPlayer(betterPlayerController.videoPlayerController),
-            ),
+          CroppedVideo(
+            betterPlayerController: betterPlayerController,
+            controller: betterPlayerController.videoPlayerController,
+            betterPlayerBoxFit: betterPlayerController.betterPlayerBoxFit,
           ),
           betterPlayerController.overlay ?? Container(),
           betterPlayerController.betterPlayerDataSource.subtitles != null
@@ -96,6 +94,7 @@ class _BetterPlayerWithControlsState extends State<BetterPlayerWithControls> {
             ? controlsConfiguration.customControls
             : Theme.of(context).platform == TargetPlatform.android
                 ? BetterPlayerMaterialControls(
+                    onPlayerMethondChanged: onPlayerMethondChanged,
                     onControlsVisibilityChanged: onControlsVisibilityChanged,
                     controlsConfiguration: controlsConfiguration,
                   )
@@ -106,15 +105,89 @@ class _BetterPlayerWithControlsState extends State<BetterPlayerWithControls> {
         : const SizedBox();
   }
 
-  double _calculateAspectRatio(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    final width = size.width;
-    final height = size.height;
-
-    return width > height ? width / height : height / width;
+  void onPlayerMethondChanged(
+      BetterPlayerController betterPlayerController, BoxFit index) {
+    betterPlayerController.setupBetterPlayerBoxFit(index);
+    setState(() {});
   }
 
   void onControlsVisibilityChanged(bool state) {
     playerVisibilityStreamController.add(state);
+  }
+}
+
+class CroppedVideo extends StatefulWidget {
+  CroppedVideo({
+    this.controller,
+    this.betterPlayerController,
+    this.betterPlayerBoxFit,
+  });
+
+  final VideoPlayerController controller;
+  final BetterPlayerController betterPlayerController;
+  final BoxFit betterPlayerBoxFit;
+
+  @override
+  CroppedVideoState createState() => CroppedVideoState();
+}
+
+class CroppedVideoState extends State<CroppedVideo> {
+  VideoPlayerController get controller => widget.controller;
+
+  BoxFit get wBoxFit => widget.betterPlayerController.betterPlayerBoxFit;
+
+  bool initialized = false;
+
+  VoidCallback listener;
+
+  @override
+  void initState() {
+    super.initState();
+    _waitForInitialized();
+  }
+
+  @override
+  void didUpdateWidget(CroppedVideo oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.controller != controller) {
+      oldWidget.controller.removeListener(listener);
+      initialized = false;
+      _waitForInitialized();
+    }
+  }
+
+  void _waitForInitialized() {
+    listener = () {
+      if (!mounted) {
+        return;
+      }
+      if (initialized != controller.value.initialized) {
+        initialized = controller.value.initialized;
+        setState(() {});
+      }
+    };
+    controller.addListener(listener);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (initialized) {
+      return Center(
+        child: Container(
+          width: double.infinity,
+          child: FittedBox(
+            fit: widget.betterPlayerBoxFit,
+            child: SizedBox(
+              width: controller.value.size?.width ?? 0,
+              height: controller.value.size?.height ?? 0,
+              child: VideoPlayer(controller),
+              //
+            ),
+          ),
+        ),
+      );
+    } else {
+      return Container();
+    }
   }
 }

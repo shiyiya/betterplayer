@@ -7,22 +7,34 @@ import 'package:better_player/src/controls/better_player_progress_colors.dart';
 import 'package:better_player/src/core/better_player_controller.dart';
 import 'package:better_player/src/core/utils.dart';
 import 'package:better_player/src/video_player/video_player.dart';
+import 'package:better_player/src/configuration/better_player_p_methond.dart';
 import 'package:flutter/material.dart';
 import 'package:music_volume/music_volume.dart';
 import 'package:screen/screen.dart';
 
 import 'better_player_clickable_widget.dart';
 
+const PLAYER_ERMETHOND_LIST = [
+  BetterPlayerBoxFitWithText(BoxFit.contain, text: '适应'),
+  BetterPlayerBoxFitWithText(BoxFit.fill, text: '拉伸'),
+  BetterPlayerBoxFitWithText(BoxFit.cover, text: '填充'),
+];
+
 class BetterPlayerMaterialControls extends StatefulWidget {
   ///Callback used to send information if player bar is hidden or not
   final Function(bool visbility) onControlsVisibilityChanged;
+  final Function(BetterPlayerController betterPlayerController, BoxFit boxFit)
+      onPlayerMethondChanged;
 
   ///Controls config
   final BetterPlayerControlsConfiguration controlsConfiguration;
 
-  BetterPlayerMaterialControls(
-      {Key key, this.onControlsVisibilityChanged, this.controlsConfiguration})
-      : assert(onControlsVisibilityChanged != null),
+  BetterPlayerMaterialControls({
+    Key key,
+    this.onControlsVisibilityChanged,
+    this.controlsConfiguration,
+    this.onPlayerMethondChanged,
+  })  : assert(onControlsVisibilityChanged != null),
         assert(controlsConfiguration != null),
         super(key: key);
 
@@ -54,6 +66,9 @@ class _BetterPlayerMaterialControlsState
   AnimationController sideVideoListAnimationController;
   Animation<Offset> sideVideoListAnimation;
 
+  AnimationController sideMoreAnimationController;
+  Animation<Offset> sideMoreAnimation;
+
   bool isLock = false;
   bool showLockIcon = false;
 
@@ -64,6 +79,11 @@ class _BetterPlayerMaterialControlsState
     }
     if (_videoListsideShow) {
       toggleVideoSide();
+      return;
+    }
+
+    if (_moreSideShow) {
+      toggleMoreSide();
       return;
     }
 
@@ -99,7 +119,7 @@ class _BetterPlayerMaterialControlsState
                 alignment: Alignment.centerLeft,
                 color: Colors.transparent,
                 child: IconButton(
-                  icon: Icon(Icons.lock),
+                  icon: Icon(Icons.lock_outline),
                   color: _controlsConfiguration.iconsColor,
                   onPressed: toggleLock,
                 ),
@@ -169,7 +189,7 @@ class _BetterPlayerMaterialControlsState
                                         child: Align(
                                           alignment: Alignment.centerLeft,
                                           child: IconButton(
-                                            icon: Icon(Icons.lock),
+                                            icon: Icon(Icons.lock_open),
                                             color: _controlsConfiguration
                                                 .iconsColor,
                                             onPressed: toggleLock,
@@ -230,10 +250,10 @@ class _BetterPlayerMaterialControlsState
                       height: MediaQuery.of(context).size.height,
                       width: MediaQuery.of(context).size.width / 3,
                       color: Colors.black.withOpacity(0.6),
-                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      padding: EdgeInsets.all(10.0),
                       child: SingleChildScrollView(
                         child: Wrap(
-                          alignment: WrapAlignment.spaceBetween,
+                          alignment: WrapAlignment.start,
                           children: [
                             for (var i = 0;
                                 i < _betterPlayerController.videoListLen;
@@ -253,10 +273,10 @@ class _BetterPlayerMaterialControlsState
                                             color: _controlsConfiguration
                                                 .textColor
                                                 .withRed(5),
-                                            width: 2,
                                           ),
                                           borderRadius: BorderRadius.all(
-                                              Radius.circular(4.0)))
+                                              Radius.circular(2.0)),
+                                        )
                                       : null,
                                   child: Text(
                                     '${i + 1}',
@@ -277,9 +297,93 @@ class _BetterPlayerMaterialControlsState
                     ),
                   ),
                 ),
+                buildMoreSide(),
               ],
             ),
           );
+  }
+
+  Align buildMoreSide() {
+    final s = Theme.of(context).textTheme.caption.copyWith(
+          color: _controlsConfiguration.textColor.withOpacity(0.5),
+        );
+    return Align(
+      alignment: Alignment.topRight,
+      child: SlideTransition(
+        position: sideMoreAnimation,
+        child: Container(
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width / 2.5,
+          color: Colors.black.withOpacity(0.6),
+          padding: EdgeInsets.all(10.0),
+          child: ListView(children: [
+            Text('播放速度', style: s),
+            Row(
+              // mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [0.5, 0.75, 1.0, 1.25, 1.5, 2.0]
+                  .map((e) => Expanded(
+                        flex: 1,
+                        child: GestureDetector(
+                          onTap: () {
+                            _controller.setSpeed(e);
+                          },
+                          child: Container(
+                            width: double.infinity,
+                            padding: EdgeInsets.symmetric(vertical: 15),
+                            alignment: Alignment.center,
+                            color: Colors.transparent,
+                            child: Text(
+                              '$e',
+                              style: TextStyle(
+                                color: _controller.value.speed == e
+                                    ? _controlsConfiguration.textColor
+                                        .withRed(5)
+                                    : _controlsConfiguration.textColor,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ))
+                  .toList(),
+            ),
+            SizedBox(height: 20),
+            Text('画面尺寸', style: s),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: PLAYER_ERMETHOND_LIST
+                  .map(
+                    (e) => Expanded(
+                      flex: 1,
+                      child: GestureDetector(
+                        onTap: () {
+                          widget.onPlayerMethondChanged(
+                              _betterPlayerController, e.type);
+                        },
+                        child: Container(
+                          color: Colors.transparent,
+                          width: double.infinity,
+                          padding: EdgeInsets.symmetric(vertical: 15),
+                          alignment: Alignment.center,
+                          child: Text(
+                            '${e.text}',
+                            style: TextStyle(
+                              color: _betterPlayerController
+                                          .betterPlayerBoxFit ==
+                                      e.type
+                                  ? _controlsConfiguration.textColor.withRed(5)
+                                  : _controlsConfiguration.textColor,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  )
+                  .toList(),
+            )
+          ]),
+        ),
+      ),
+    );
   }
 
   bool _isLoading() {
@@ -475,7 +579,7 @@ class _BetterPlayerMaterialControlsState
             Expanded(
               child: Text(
                 _betterPlayerController.appBarTitle ?? '',
-                style: TextStyle(color: _controlsConfiguration.iconsColor),
+                style: TextStyle(color: _controlsConfiguration.textColor),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -487,6 +591,14 @@ class _BetterPlayerMaterialControlsState
               ),
               onPressed: toggleSide,
             ),
+            if (_betterPlayerController.isFullScreen)
+              IconButton(
+                icon: Icon(
+                  Icons.more_horiz,
+                  color: _controlsConfiguration.iconsColor,
+                ),
+                onPressed: toggleMoreSide,
+              )
           ],
         ),
       ),
@@ -495,6 +607,22 @@ class _BetterPlayerMaterialControlsState
 
   bool _sideShow = false; // 倍速
   bool _videoListsideShow = false;
+  bool _moreSideShow = false;
+
+  void toggleMoreSide() {
+    if (!_betterPlayerController.isFullScreen) return;
+    if (_moreSideShow) {
+      sideMoreAnimationController.reverse();
+      _moreSideShow = false;
+      return;
+    } else if (!_moreSideShow) {
+      sideMoreAnimationController.forward();
+      _hideStuff = true;
+      _moreSideShow = true;
+      setState(() {});
+      return;
+    }
+  }
 
   void toggleVideoSide() {
     if (_videoListsideShow) {
@@ -622,7 +750,7 @@ class _BetterPlayerMaterialControlsState
             ? EdgeInsets.all(20)
             : EdgeInsets.all(8),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(5.0)),
+          borderRadius: BorderRadius.all(Radius.circular(2.0)),
           color: Colors.black.withOpacity(0.6),
         ),
         child: Text(
@@ -842,6 +970,11 @@ class _BetterPlayerMaterialControlsState
       sideVideoListAnimation = Tween(begin: Offset(1, 0), end: Offset(0, 0))
           .animate(sideVideoListAnimationController);
     }
+
+    sideMoreAnimationController = AnimationController(
+        duration: const Duration(milliseconds: 200), vsync: this);
+    sideMoreAnimation = Tween(begin: Offset(1, 0), end: Offset(0, 0))
+        .animate(sideMoreAnimationController);
 
     _updateState();
 

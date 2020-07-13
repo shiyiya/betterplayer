@@ -72,9 +72,8 @@ class BetterPlayerState extends State<BetterPlayer> {
     if (isFullScreen && (_isFullScreen == null || !_isFullScreen)) {
       _isFullScreen = isFullScreen;
       await _pushFullScreenWidget(context);
-    } else if (!isFullScreen && _isFullScreen) {
-      if (Navigator.of(context).canPop())
-        Navigator.of(context, rootNavigator: true).pop();
+    } else if (!isFullScreen && _isFullScreen != null && _isFullScreen) {
+      Navigator.of(context, rootNavigator: true).pop();
       _isFullScreen = isFullScreen;
     }
   }

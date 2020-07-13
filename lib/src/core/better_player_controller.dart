@@ -93,6 +93,7 @@ class BetterPlayerController extends ChangeNotifier {
     if (betterPlayerDataSource != null) {
       _setup(betterPlayerDataSource);
     }
+    betterPlayerBoxFit = betterPlayerConfiguration.betterPlayerBoxFit;
   }
 
   static BetterPlayerController of(BuildContext context) {
@@ -134,9 +135,16 @@ class BetterPlayerController extends ChangeNotifier {
     await _initialize();
   }
 
+  BoxFit betterPlayerBoxFit;
+
+  void setupBetterPlayerBoxFit(BoxFit index) {
+    betterPlayerBoxFit = index;
+    notifyListeners();
+  }
+
   void setupVideoListIndex(int i) {
     currentVideoIndex = i;
-    notifyListeners();
+    // notifyListeners();
   }
 
   void setupAppBarTitle(String title) {

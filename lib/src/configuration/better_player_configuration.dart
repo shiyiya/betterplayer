@@ -62,8 +62,11 @@ class BetterPlayerConfiguration {
   ///Defines controls configuration
   final BetterPlayerControlsConfiguration controlsConfiguration;
 
+  final BoxFit betterPlayerBoxFit;
+
   const BetterPlayerConfiguration({
-    this.aspectRatio,
+    this.aspectRatio = 16 / 9,
+    this.betterPlayerBoxFit = BoxFit.contain,
     this.autoPlay = false,
     this.startAt,
     this.looping = false,

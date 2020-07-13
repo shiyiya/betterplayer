@@ -18,12 +18,16 @@ class _GeneralPageState extends State<GeneralPage> {
   bool _fileVideoShown = false;
 
   Future<BetterPlayerController> _setupDefaultVideoData() async {
-    var dataSource = BetterPlayerDataSource(BetterPlayerDataSourceType.NETWORK,
-        "https://vt1.doubanio.com/201902111139/0c06a85c600b915d8c9cbdbbaf06ba9f/view/movie/M/302420330.mp4",
-        subtitles: BetterPlayerSubtitlesSource(
-            type: BetterPlayerSubtitlesSourceType.NETWORK,
-            url:
-                "https://dl.dropboxusercontent.com/s/71nzjo2ux3evxqk/example_subtitles.srt"));
+    var dataSource = BetterPlayerDataSource(
+      BetterPlayerDataSourceType.NETWORK,
+      // "https://vt1.doubanio.com/201902111139/0c06a85c600b915d8c9cbdbbaf06ba9f/view/movie/M/302420330.mp4",
+      'https://quan.qq.com/video/1098_f8ac3d66fea490671f5dc3dded235290',
+      subtitles: BetterPlayerSubtitlesSource(
+          type: BetterPlayerSubtitlesSourceType.NETWORK,
+          url:
+              "https://dl.dropboxusercontent.com/s/71nzjo2ux3evxqk/example_subtitles.srt"),
+    );
+
     _betterPlayerController = BetterPlayerController(
       BetterPlayerConfiguration(
         controlsConfiguration: BetterPlayerControlsConfiguration(
@@ -31,6 +35,7 @@ class _GeneralPageState extends State<GeneralPage> {
           enableMute: false,
           iconsColor: Colors.white,
         ),
+        aspectRatio: 16 / 9,
       ),
       betterPlayerDataSource: dataSource,
       videoListLen: 100,
