@@ -388,7 +388,9 @@ class _BetterPlayerMaterialControlsState
 
   bool _isLoading() {
     if (_latestValue != null) {
-      if (!_latestValue.isPlaying && _latestValue.duration == null) {
+      if (!_latestValue.isPlaying &&
+          _latestValue.duration == null &&
+          !_betterPlayerController.betterPlayerDataSource.liveStream) {
         return true;
       }
       if (_latestValue.isPlaying && _latestValue.isBuffering) {
@@ -1012,7 +1014,10 @@ class _BetterPlayerMaterialControlsState
       return;
     }
 
-    final bool isFinished = _latestValue.position >= _latestValue.duration;
+    bool isFinished = false;
+    if (_latestValue?.position != null && _latestValue?.duration != null) {
+      isFinished = _latestValue.position >= _latestValue.duration;
+    }
 
     setState(() {
       if (_controller.value.isPlaying) {
@@ -1023,6 +1028,10 @@ class _BetterPlayerMaterialControlsState
         _cancelAndRestartTimer();
 
         if (!_controller.value.initialized) {
+          if (_betterPlayerController.betterPlayerDataSource.liveStream) {
+            _betterPlayerController.play();
+            _betterPlayerController.cancelNextVideoTimer();
+          }
         } else {
           if (isFinished) {
             _betterPlayerController.seekTo(Duration(seconds: 0));

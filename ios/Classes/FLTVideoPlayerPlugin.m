@@ -308,6 +308,8 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     AVPlayerItem* item = (AVPlayerItem*)object;
     switch (item.status) {
       case AVPlayerItemStatusFailed:
+        NSLog(@"Failed to load video:");
+        NSLog(item.error.debugDescription);
         if (_eventSink != nil) {
           _eventSink([FlutterError
               errorWithCode:@"VideoError"
@@ -341,7 +343,10 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 }
 
 - (void)updatePlayingState {
+  NSLog(@"Update playing state");
+
   if (!_isInitialized || !_key) {
+    NSLog(@"not initalized and paused!!");
     _displayLink.paused = YES;
     return;
   }
@@ -355,6 +360,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 }
 
 - (void)onReadyToPlay {
+  NSLog(@"OnReadyToPlay");
   if (_eventSink && !_isInitialized && _key) {
     if (!_player.currentItem) {
       return;
@@ -372,7 +378,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
       return;
     }
     // The player may be initialized but still needs to determine the duration.
-    if ([self duration] == 0) {
+     if (isLive == false && [self duration] == 0) {
       return;
     }
 
