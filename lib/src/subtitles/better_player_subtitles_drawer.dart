@@ -159,8 +159,7 @@ class _BetterPlayerSubtitlesDrawerState
     assert(textStyle != null);
     return HtmlWidget(
       text,
-      textStyle: textStyle,
-      tableCellPadding: const EdgeInsets.all(0),
+      textStyle: textStyle
     );
   }
 
