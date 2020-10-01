@@ -60,6 +60,9 @@ class _BetterPlayerMaterialControlsState
   BetterPlayerControlsConfiguration get _controlsConfiguration =>
       widget.controlsConfiguration;
 
+  ///Min. time of buffered video to hide loading timer (in milliseconds)
+  static const int _bufferingInterval = 20000;
+
   AnimationController sideAnimationController;
   Animation<Offset> sideAnimation;
 
@@ -159,7 +162,7 @@ class _BetterPlayerMaterialControlsState
                                 onHorizontalDragEnd: _onHorizontalDragEnd,
                                 child: Stack(
                                   children: <Widget>[
-                                    _isLoading()
+                                    isLoading(_latestValue)
                                         ? _buildLoadingWidget()
                                         : _buildHitArea(),
                                     if (showTimeLine) _buildTimeLine(),
@@ -386,15 +389,23 @@ class _BetterPlayerMaterialControlsState
     );
   }
 
-  bool _isLoading() {
-    if (_latestValue != null) {
-      if (!_latestValue.isPlaying &&
-          _latestValue.duration == null &&
-          !_betterPlayerController.betterPlayerDataSource.liveStream) {
+  bool isLoading(VideoPlayerValue latestValue) {
+    assert(latestValue != null, "Latest value can't be null");
+    if (latestValue != null) {
+      if (!latestValue.isPlaying && latestValue.duration == null) {
         return true;
       }
-      if (_latestValue.isPlaying && _latestValue.isBuffering) {
-        return true;
+
+      var position = latestValue.position;
+      var bufferedEndPosition = latestValue.buffered.last.end;
+      if (position != null && bufferedEndPosition != null) {
+        var difference = bufferedEndPosition - position;
+
+        if (latestValue.isPlaying &&
+            latestValue.isBuffering &&
+            difference.inMilliseconds < _bufferingInterval) {
+          return true;
+        }
       }
     }
     return false;

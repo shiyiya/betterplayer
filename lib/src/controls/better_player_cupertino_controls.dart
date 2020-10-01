@@ -247,7 +247,17 @@ class _BetterPlayerCupertinoControlsState
     return Expanded(
       child: GestureDetector(
         onTap: _latestValue != null && _latestValue.isPlaying
-            ? _cancelAndRestartTimer
+            ? () {
+                if (_hideStuff == true) {
+                  _cancelAndRestartTimer();
+                } else {
+                  _hideTimer?.cancel();
+
+                  setState(() {
+                    _hideStuff = true;
+                  });
+                }
+              }
             : () {
                 _hideTimer?.cancel();
 
@@ -584,9 +594,11 @@ class _BetterPlayerCupertinoControlsState
   }
 
   void _updateState() {
-    setState(() {
-      _latestValue = _controller.value;
-    });
+    if (mounted) {
+      setState(() {
+        _latestValue = _controller.value;
+      });
+    }
   }
 
   void _onPlayerHide() {

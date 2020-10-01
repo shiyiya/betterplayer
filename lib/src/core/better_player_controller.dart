@@ -80,6 +80,8 @@ class BetterPlayerController extends ChangeNotifier {
 
   final GanerateVideoFn ganerateVideoFn;
 
+  bool _disposed = false;
+
   BetterPlayerController(
     this.betterPlayerConfiguration, {
     this.betterPlayerPlaylistConfiguration,
@@ -300,6 +302,7 @@ class BetterPlayerController extends ChangeNotifier {
           Timer.periodic(Duration(milliseconds: 1000), (_timer) async {
         if (_nextVideoTime == 1) {
           _timer.cancel();
+          _nextVideoTimer = null;
         }
         _nextVideoTime -= 1;
         nextVideoTimeStreamController.add(_nextVideoTime);
@@ -322,12 +325,15 @@ class BetterPlayerController extends ChangeNotifier {
 
   @override
   void dispose() {
-    _eventListeners.clear();
-    videoPlayerController?.removeListener(_fullScreenListener);
-    videoPlayerController?.removeListener(_onVideoPlayerChanged);
-    videoPlayerController?.dispose();
-    _nextVideoTimer?.cancel();
-    nextVideoTimeStreamController.close();
-    super.dispose();
+    if (!_disposed) {
+      _eventListeners.clear();
+      videoPlayerController?.removeListener(_fullScreenListener);
+      videoPlayerController?.removeListener(_onVideoPlayerChanged);
+      videoPlayerController?.dispose();
+      _nextVideoTimer?.cancel();
+      nextVideoTimeStreamController.close();
+      _disposed = true;
+      super.dispose();
+    }
   }
 }
