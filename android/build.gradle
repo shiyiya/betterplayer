@@ -3,7 +3,7 @@ version '0.0.77'
 
 buildscript {
 
-    ext.exoPlayerVersion = "2.15.1"
+    ext.exoPlayerVersion = "2.16.1"
     ext.lifecycleVersion = "2.4.0-beta01"
     ext.annotationVersion = "1.2.0"
     ext.workVersion = "2.7.0"
