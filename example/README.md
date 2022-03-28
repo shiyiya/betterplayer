@@ -1,6 +1,6 @@
 # better_player_example
 
-A new Flutter application.
+Demonstrates how to use the better_player plugin.
 
 ## Getting Started
 
