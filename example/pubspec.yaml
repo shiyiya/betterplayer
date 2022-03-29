@@ -9,11 +9,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_localizations:
-    sdk: flutter
 
   better_player:
     path: ../
+  flutter_localizations:
+    sdk: flutter
   path_provider: ^2.0.2
   visibility_detector: ^0.2.0
   collection: ^1.15.0
@@ -24,6 +24,6 @@ dev_dependencies:
   flutter_lints: ^1.0.0
 
 flutter:
+  uses-material-design: true
   assets:
     - assets/
-  uses-material-design: true
