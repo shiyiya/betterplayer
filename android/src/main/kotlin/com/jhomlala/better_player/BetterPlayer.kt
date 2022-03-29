@@ -9,7 +9,9 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
-import android.os.*
+import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
@@ -39,7 +41,7 @@ import com.google.android.exoplayer2.ui.PlayerNotificationManager
 import com.google.android.exoplayer2.ui.PlayerNotificationManager.BitmapCallback
 import com.google.android.exoplayer2.ui.PlayerNotificationManager.MediaDescriptionAdapter
 import com.google.android.exoplayer2.upstream.DataSource
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
+import com.google.android.exoplayer2.upstream.DefaultDataSource
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
 import com.google.android.exoplayer2.util.Util
 import com.jhomlala.better_player.DataSourceUtils.getDataSourceFactory
@@ -61,7 +63,7 @@ internal class BetterPlayer(
     customDefaultLoadControl: CustomDefaultLoadControl?,
     result: MethodChannel.Result
 ) {
-    private val exoPlayer: ExoPlayer?
+    private val exoPlayer: ExoPlayer
     private val eventSink = QueuingEventSink()
     private val trackSelector: DefaultTrackSelector = DefaultTrackSelector(context)
     private val loadControl: LoadControl
@@ -118,7 +120,7 @@ internal class BetterPlayer(
         this.key = key
         isInitialized = false
         val uri = Uri.parse(dataSource)
-        var dataSourceFactory: DataSource.Factory?
+        var dataSourceFactory: DataSource.Factory
         val userAgent = getUserAgent(headers)
         if (licenseUrl != null && licenseUrl.isNotEmpty()) {
             val httpMediaDrmCallback =
@@ -176,14 +178,17 @@ internal class BetterPlayer(
                 )
             }
         } else {
-            dataSourceFactory = DefaultDataSourceFactory(context, userAgent)
+            dataSourceFactory = DefaultDataSource.Factory(
+                context,
+                DefaultHttpDataSource.Factory().setUserAgent(userAgent)
+            )
         }
         val mediaSource = buildMediaSource(uri, dataSourceFactory, formatHint, cacheKey, context)
         if (overriddenDuration != 0L) {
             val clippingMediaSource = ClippingMediaSource(mediaSource, 0, overriddenDuration * 1000)
-            exoPlayer!!.setMediaSource(clippingMediaSource)
+            exoPlayer.setMediaSource(clippingMediaSource)
         } else {
-            exoPlayer!!.setMediaSource(mediaSource)
+            exoPlayer.setMediaSource(mediaSource)
         }
         exoPlayer.prepare()
         result.success(null)
@@ -212,7 +217,8 @@ internal class BetterPlayer(
                 return PendingIntent.getActivity(
                     context, 0,
                     notificationIntent,
-                    PendingIntent.FLAG_IMMUTABLE
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.FLAG_IMMUTABLE
+                    else PendingIntent.FLAG_UPDATE_CURRENT
                 )
             }
 
@@ -299,7 +305,7 @@ internal class BetterPlayer(
         playerNotificationManager!!.setUseStopAction(false)
         val mediaSession = setupMediaSession(context, false)
         playerNotificationManager!!.setMediaSessionToken(mediaSession.sessionToken)
-        exoPlayer!!.addListener(setupControlDispatcher())
+        exoPlayer.addListener(setupControlDispatcher())
         //  playerNotificationManager!!.setControlDispatcher(setupControlDispatcher())
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             refreshHandler = Handler(Looper.getMainLooper())
@@ -356,7 +362,7 @@ internal class BetterPlayer(
 
     fun disposeRemoteNotifications() {
         if (exoPlayerEventListener != null) {
-            exoPlayer!!.removeListener(exoPlayerEventListener!!)
+            exoPlayer.removeListener(exoPlayerEventListener!!)
         }
         if (refreshHandler != null) {
             refreshHandler!!.removeCallbacksAndMessages(null)
@@ -405,13 +411,13 @@ internal class BetterPlayer(
         return when (type) {
             C.TYPE_SS -> SsMediaSource.Factory(
                 DefaultSsChunkSource.Factory(mediaDataSourceFactory),
-                DefaultDataSourceFactory(context, null, mediaDataSourceFactory)
+                DefaultDataSource.Factory(context, mediaDataSourceFactory)
             )
                 .setDrmSessionManagerProvider(drmSessionManagerProvider)
                 .createMediaSource(mediaItem)
             C.TYPE_DASH -> DashMediaSource.Factory(
                 DefaultDashChunkSource.Factory(mediaDataSourceFactory),
-                DefaultDataSourceFactory(context, null, mediaDataSourceFactory)
+                DefaultDataSource.Factory(context, mediaDataSourceFactory)
             )
                 .setDrmSessionManagerProvider(drmSessionManagerProvider)
                 .createMediaSource(mediaItem)
@@ -444,7 +450,7 @@ internal class BetterPlayer(
                 }
             })
         surface = Surface(textureEntry.surfaceTexture())
-        exoPlayer!!.setVideoSurface(surface)
+        exoPlayer.setVideoSurface(surface)
         setAudioAttributes(exoPlayer, true)
         exoPlayer.addListener(object : Player.Listener {
             override fun onPlaybackStateChanged(playbackState: Int) {
@@ -486,7 +492,7 @@ internal class BetterPlayer(
     }
 
     fun sendBufferingUpdate(isFromBufferingStart: Boolean) {
-        val bufferedPosition = exoPlayer!!.bufferedPosition
+        val bufferedPosition = exoPlayer.bufferedPosition
         if (isFromBufferingStart || bufferedPosition != lastSendBufferedPosition) {
             val event: MutableMap<String, Any> = HashMap()
             event["event"] = "bufferingUpdate"
@@ -499,42 +505,38 @@ internal class BetterPlayer(
     }
 
     private fun setAudioAttributes(exoPlayer: ExoPlayer, mixWithOthers: Boolean) {
-        val audioComponent = exoPlayer.audioComponent ?: return
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            audioComponent.setAudioAttributes(
-                AudioAttributes.Builder().setContentType(C.CONTENT_TYPE_MOVIE).build(),
-                !mixWithOthers
+        val audioAttributes = AudioAttributes.Builder()
+            .setUsage(C.USAGE_MEDIA)
+            .setContentType(
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) C.CONTENT_TYPE_MOVIE
+                else C.CONTENT_TYPE_MUSIC
             )
-        } else {
-            audioComponent.setAudioAttributes(
-                AudioAttributes.Builder().setContentType(C.CONTENT_TYPE_MUSIC).build(),
-                !mixWithOthers
-            )
-        }
+            .build()
+        exoPlayer.setAudioAttributes(audioAttributes, mixWithOthers)
     }
 
     fun play() {
-        exoPlayer!!.playWhenReady = true
+        exoPlayer.playWhenReady = true
     }
 
     fun pause() {
-        exoPlayer!!.playWhenReady = false
+        exoPlayer.playWhenReady = false
     }
 
     fun setLooping(value: Boolean) {
-        exoPlayer!!.repeatMode = if (value) Player.REPEAT_MODE_ALL else Player.REPEAT_MODE_OFF
+        exoPlayer.repeatMode = if (value) Player.REPEAT_MODE_ALL else Player.REPEAT_MODE_OFF
     }
 
     fun setVolume(value: Double) {
         val bracketedValue = max(0.0, min(1.0, value))
             .toFloat()
-        exoPlayer!!.volume = bracketedValue
+        exoPlayer.volume = bracketedValue
     }
 
     fun setSpeed(value: Double) {
         val bracketedValue = value.toFloat()
         val playbackParameters = PlaybackParameters(bracketedValue)
-        exoPlayer!!.playbackParameters = playbackParameters
+        exoPlayer.playbackParameters = playbackParameters
     }
 
     fun setTrackParameters(width: Int, height: Int, bitrate: Int) {
@@ -553,14 +555,14 @@ internal class BetterPlayer(
     }
 
     fun seekTo(location: Int) {
-        exoPlayer!!.seekTo(location.toLong())
+        exoPlayer.seekTo(location.toLong())
     }
 
     val position: Long
-        get() = exoPlayer!!.currentPosition
+        get() = exoPlayer.currentPosition
     val absolutePosition: Long
         get() {
-            val timeline = exoPlayer!!.currentTimeline
+            val timeline = exoPlayer.currentTimeline
             if (!timeline.isEmpty) {
                 val windowStartTimeMs = timeline.getWindow(0, Timeline.Window()).windowStartTimeMs
                 val pos = exoPlayer.currentPosition
@@ -575,7 +577,7 @@ internal class BetterPlayer(
             event["event"] = "initialized"
             event["key"] = key
             event["duration"] = getDuration()
-            if (exoPlayer!!.videoFormat != null) {
+            if (exoPlayer.videoFormat != null) {
                 val videoFormat = exoPlayer.videoFormat
                 var width = videoFormat!!.width
                 var height = videoFormat.height
@@ -592,7 +594,7 @@ internal class BetterPlayer(
         }
     }
 
-    private fun getDuration(): Long = exoPlayer!!.duration
+    private fun getDuration(): Long = exoPlayer.duration
 
     /**
      * Create media session which will be used in notifications, pip mode.
@@ -607,7 +609,8 @@ internal class BetterPlayer(
         val pendingIntent = PendingIntent.getBroadcast(
             context,
             0, mediaButtonIntent,
-            PendingIntent.FLAG_IMMUTABLE
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.FLAG_IMMUTABLE
+            else PendingIntent.FLAG_UPDATE_CURRENT
         )
         val mediaSession = MediaSessionCompat(context, TAG, null, pendingIntent)
         mediaSession.setCallback(object : MediaSessionCompat.Callback() {
@@ -619,7 +622,7 @@ internal class BetterPlayer(
         mediaSession.isActive = true
         val mediaSessionConnector = MediaSessionConnector(mediaSession)
         if (setupControlDispatcher) {
-            exoPlayer!!.addListener(setupControlDispatcher())
+            exoPlayer.addListener(setupControlDispatcher())
         }
         mediaSessionConnector.setPlayer(exoPlayer)
         this.mediaSession = mediaSession
@@ -713,7 +716,7 @@ internal class BetterPlayer(
     }
 
     private fun sendSeekToEvent(positionMs: Long) {
-        exoPlayer!!.seekTo(positionMs)
+        exoPlayer.seekTo(positionMs)
         val event: MutableMap<String, Any> = HashMap()
         event["event"] = "seek"
         event["position"] = positionMs
@@ -721,21 +724,19 @@ internal class BetterPlayer(
     }
 
     fun setMixWithOthers(mixWithOthers: Boolean) {
-        setAudioAttributes(exoPlayer!!, mixWithOthers)
+        setAudioAttributes(exoPlayer, mixWithOthers)
     }
 
     fun dispose() {
         disposeMediaSession()
         disposeRemoteNotifications()
         if (isInitialized) {
-            exoPlayer!!.stop()
+            exoPlayer.stop()
         }
         textureEntry.release()
         eventChannel.setStreamHandler(null)
-        if (surface != null) {
-            surface!!.release()
-        }
-        exoPlayer?.release()
+        surface?.release()
+        exoPlayer.release()
     }
 
     override fun equals(other: Any?): Boolean {
@@ -747,7 +748,7 @@ internal class BetterPlayer(
     }
 
     override fun hashCode(): Int {
-        var result = exoPlayer?.hashCode() ?: 0
+        var result = exoPlayer.hashCode() ?: 0
         result = 31 * result + if (surface != null) surface.hashCode() else 0
         return result
     }

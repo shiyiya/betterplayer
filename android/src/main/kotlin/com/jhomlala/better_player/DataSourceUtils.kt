@@ -1,6 +1,7 @@
 package com.jhomlala.better_player
 
 import android.net.Uri
+import com.google.android.exoplayer2.ExoPlayerLibraryInfo
 import com.google.android.exoplayer2.upstream.DataSource
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
 
@@ -18,6 +19,7 @@ internal object DataSourceUtils {
             }
         }
         return userAgent
+            ?: "ExoPlayerLib-${ExoPlayerLibraryInfo.VERSION}/Android-${android.os.Build.VERSION.SDK_INT}"
     }
 
     @JvmStatic
@@ -35,6 +37,7 @@ internal object DataSourceUtils {
             headers.forEach { entry ->
                 notNullHeaders[entry.key] = entry.value
             }
+
             (dataSourceFactory as DefaultHttpDataSource.Factory).setDefaultRequestProperties(
                 notNullHeaders
             )
