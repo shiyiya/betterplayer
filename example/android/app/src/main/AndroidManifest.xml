@@ -1,8 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.jhomlala.better_player_example">
    <application
-        android:label="Better Player Example"
-        android:name="better_player_example"
+        android:label="better_player_example"
+        android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
