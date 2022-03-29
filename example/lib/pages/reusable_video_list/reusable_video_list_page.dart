@@ -14,7 +14,7 @@ class ReusableVideoListPage extends StatefulWidget {
 class _ReusableVideoListPageState extends State<ReusableVideoListPage> {
   ReusableVideoListController videoListController =
       ReusableVideoListController();
-  final _random = new Random();
+  final _random = Random();
   final List<String> _videos = [
     Constants.forBiggerBlazesUrl,
     Constants.forBiggerJoyridesVideoUrl,
@@ -47,7 +47,7 @@ class _ReusableVideoListPageState extends State<ReusableVideoListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Reusable video list")),
+      appBar: AppBar(title: const Text("Reusable video list")),
       body: Container(
         color: Colors.grey,
         child: Column(children: [

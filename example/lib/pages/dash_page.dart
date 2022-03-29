@@ -13,7 +13,7 @@ class _DashPageState extends State<DashPage> {
   @override
   void initState() {
     BetterPlayerConfiguration betterPlayerConfiguration =
-        BetterPlayerConfiguration(
+        const BetterPlayerConfiguration(
       aspectRatio: 16 / 9,
       fit: BoxFit.contain,
     );
@@ -29,13 +29,13 @@ class _DashPageState extends State<DashPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Dash page"),
+        title: const Text("Dash page"),
       ),
       body: Column(
         children: [
           const SizedBox(height: 8),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16),
             child: Text(
               "Player with DASH audio tracks, subtitles and tracks.",
               style: TextStyle(fontSize: 16),

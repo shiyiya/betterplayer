@@ -52,7 +52,7 @@ class _WelcomePageState extends State<WelcomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Better Player Example"),
+        title: const Text("Better Player Example"),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -64,7 +64,7 @@ class _WelcomePageState extends State<WelcomePage> {
               height: 200,
               width: 200,
             ),
-            Text(
+            const Text(
               "Welcome to Better Player example app. Click on any element below to see example.",
               style: TextStyle(fontSize: 16),
             ),
@@ -176,10 +176,10 @@ class _WelcomePageState extends State<WelcomePage> {
               padding: const EdgeInsets.symmetric(vertical: 8),
               child: Text(
                 name,
-                style: TextStyle(fontSize: 16),
+                style: const TextStyle(fontSize: 16),
               ),
             ),
-            Divider(),
+            const Divider(),
           ],
         ),
       ),

@@ -13,7 +13,7 @@ class _RotationAndFitPageState extends State<RotationAndFitPage> {
   @override
   void initState() {
     BetterPlayerConfiguration betterPlayerConfiguration =
-        BetterPlayerConfiguration(
+        const BetterPlayerConfiguration(
       aspectRatio: 1.0,
       fit: BoxFit.fill,
       rotation: 90,
@@ -29,13 +29,13 @@ class _RotationAndFitPageState extends State<RotationAndFitPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Rotation and fit"),
+        title: const Text("Rotation and fit"),
       ),
       body: Column(
         children: [
           const SizedBox(height: 8),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16),
             child: Text(
               "Player with different rotation and fit.",
               style: TextStyle(fontSize: 16),

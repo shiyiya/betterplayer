@@ -45,13 +45,13 @@ class _ControlsConfigurationPageState extends State<ControlsConfigurationPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Controls configuration"),
+        title: const Text("Controls configuration"),
       ),
       body: Column(
         children: [
           const SizedBox(height: 8),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16),
             child: Text(
               "Player with customized controls via BetterPlayerControlsConfiguration.",
               style: TextStyle(fontSize: 16),
@@ -65,12 +65,12 @@ class _ControlsConfigurationPageState extends State<ControlsConfigurationPage> {
             onPressed: () {
               setState(() {
                 _betterPlayerController.setBetterPlayerControlsConfiguration(
-                  BetterPlayerControlsConfiguration(
+                  const BetterPlayerControlsConfiguration(
                       overflowModalColor: Colors.amberAccent),
                 );
               });
             },
-            child: Text("Reset settings"),
+            child: const Text("Reset settings"),
           )
         ],
       ),

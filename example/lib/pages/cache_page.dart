@@ -14,14 +14,14 @@ class _CachePageState extends State<CachePage> {
   @override
   void initState() {
     BetterPlayerConfiguration betterPlayerConfiguration =
-        BetterPlayerConfiguration(
+        const BetterPlayerConfiguration(
       aspectRatio: 16 / 9,
       fit: BoxFit.contain,
     );
     _betterPlayerDataSource = BetterPlayerDataSource(
       BetterPlayerDataSourceType.network,
       Constants.phantomVideoUrl,
-      cacheConfiguration: BetterPlayerCacheConfiguration(
+      cacheConfiguration: const BetterPlayerCacheConfiguration(
         useCache: true,
         preCacheSize: 10 * 1024 * 1024,
         maxCacheSize: 10 * 1024 * 1024,
@@ -39,13 +39,13 @@ class _CachePageState extends State<CachePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Cache"),
+        title: const Text("Cache"),
       ),
       body: Column(
         children: [
           const SizedBox(height: 8),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16),
             child: Text(
               "Player with cache enabled. To test this feature, first plays "
               "video, then leave this page, turn internet off and enter "
@@ -59,25 +59,25 @@ class _CachePageState extends State<CachePage> {
             child: BetterPlayer(controller: _betterPlayerController),
           ),
           TextButton(
-            child: Text("Start pre cache"),
+            child: const Text("Start pre cache"),
             onPressed: () {
               _betterPlayerController.preCache(_betterPlayerDataSource);
             },
           ),
           TextButton(
-            child: Text("Stop pre cache"),
+            child: const Text("Stop pre cache"),
             onPressed: () {
               _betterPlayerController.stopPreCache(_betterPlayerDataSource);
             },
           ),
           TextButton(
-            child: Text("Play video"),
+            child: const Text("Play video"),
             onPressed: () {
               _betterPlayerController.setupDataSource(_betterPlayerDataSource);
             },
           ),
           TextButton(
-            child: Text("Clear cache"),
+            child: const Text("Clear cache"),
             onPressed: () {
               _betterPlayerController.clearCache();
             },

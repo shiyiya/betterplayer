@@ -20,7 +20,7 @@ class _ClearKeyState extends State<ClearKeyPage> {
   @override
   void initState() {
     BetterPlayerConfiguration betterPlayerConfiguration =
-        BetterPlayerConfiguration(
+        const BetterPlayerConfiguration(
       aspectRatio: 16 / 9,
       fit: BoxFit.contain,
     );
@@ -105,14 +105,14 @@ class _ClearKeyState extends State<ClearKeyPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("ClearKey DRM"),
+        title: const Text("ClearKey DRM"),
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
             const SizedBox(height: 8),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16),
               child: Text(
                 "ClearKey Protection  with valid key.",
                 style: TextStyle(fontSize: 16),
@@ -123,8 +123,8 @@ class _ClearKeyState extends State<ClearKeyPage> {
               child: BetterPlayer(controller: _clearKeyControllerFile),
             ),
             const SizedBox(height: 16),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16),
               child: Text(
                 "ClearKey Protection with invalid key.",
                 style: TextStyle(fontSize: 16),
@@ -135,8 +135,8 @@ class _ClearKeyState extends State<ClearKeyPage> {
               child: BetterPlayer(controller: _clearKeyControllerBroken),
             ),
             const SizedBox(height: 16),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16),
               child: Text(
                 "ClearKey Protection Network with valid key.",
                 style: TextStyle(fontSize: 16),
@@ -147,8 +147,8 @@ class _ClearKeyState extends State<ClearKeyPage> {
               child: BetterPlayer(controller: _clearKeyControllerNetwork),
             ),
             const SizedBox(height: 16),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16),
               child: Text(
                 "ClearKey Protection Asset with valid key.",
                 style: TextStyle(fontSize: 16),

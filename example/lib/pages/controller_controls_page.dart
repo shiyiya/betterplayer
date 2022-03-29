@@ -13,7 +13,7 @@ class _ControllerControlsPageState extends State<ControllerControlsPage> {
   @override
   void initState() {
     BetterPlayerConfiguration betterPlayerConfiguration =
-        BetterPlayerConfiguration(
+        const BetterPlayerConfiguration(
       aspectRatio: 16 / 9,
       fit: BoxFit.contain,
     );
@@ -28,13 +28,13 @@ class _ControllerControlsPageState extends State<ControllerControlsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Controller controls"),
+        title: const Text("Controller controls"),
       ),
       body: Column(
         children: [
           const SizedBox(height: 8),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16),
             child: Text(
               "Control player with BetterPlayerController. You can control all"
               "aspects of player without using UI of player.",
@@ -48,18 +48,18 @@ class _ControllerControlsPageState extends State<ControllerControlsPage> {
           Wrap(
             children: [
               TextButton(
-                  child: Text("Play"), onPressed: _betterPlayerController.play),
+                  child: const Text("Play"), onPressed: _betterPlayerController.play),
               TextButton(
-                  child: Text("Pause"),
+                  child: const Text("Pause"),
                   onPressed: _betterPlayerController.pause),
               TextButton(
-                child: Text("Hide controls"),
+                child: const Text("Hide controls"),
                 onPressed: () {
                   _betterPlayerController.setControlsVisibility(false);
                 },
               ),
               TextButton(
-                child: Text("Show controls"),
+                child: const Text("Show controls"),
                 onPressed: () {
                   _betterPlayerController.setControlsVisibility(true);
                 },

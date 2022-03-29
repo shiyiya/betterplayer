@@ -13,7 +13,7 @@ class _HlsAudioPageState extends State<HlsAudioPage> {
   @override
   void initState() {
     BetterPlayerConfiguration betterPlayerConfiguration =
-        BetterPlayerConfiguration(
+        const BetterPlayerConfiguration(
       aspectRatio: 16 / 9,
       fit: BoxFit.contain,
     );
@@ -30,13 +30,13 @@ class _HlsAudioPageState extends State<HlsAudioPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("HLS Audio"),
+        title: const Text("HLS Audio"),
       ),
       body: Column(
         children: [
           const SizedBox(height: 8),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16),
             child: Text(
               "Click on overflow menu (3 dots) and select Audio. You can choose "
               "audio track from HLS stream. Better Player will setup audio"

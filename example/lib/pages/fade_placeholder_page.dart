@@ -11,7 +11,7 @@ class FadePlaceholderPage extends StatefulWidget {
 
 class _FadePlaceholderPageState extends State<FadePlaceholderPage> {
   late BetterPlayerController _betterPlayerController;
-  StreamController<bool> _playController = StreamController.broadcast();
+  final StreamController<bool> _playController = StreamController.broadcast();
 
   @override
   void initState() {
@@ -43,7 +43,7 @@ class _FadePlaceholderPageState extends State<FadePlaceholderPage> {
       builder: (context, snapshot) {
         bool showPlaceholder = snapshot.data ?? true;
         return AnimatedOpacity(
-          duration: Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 500),
           opacity: showPlaceholder ? 1.0 : 0.0,
           child: AspectRatio(
             aspectRatio: 16 / 9,
@@ -61,13 +61,13 @@ class _FadePlaceholderPageState extends State<FadePlaceholderPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Fade placeholder player"),
+        title: const Text("Fade placeholder player"),
       ),
       body: Column(
         children: [
           const SizedBox(height: 8),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16),
             child: Text(
               "Normal player with placeholder which fade.",
               style: TextStyle(fontSize: 16),

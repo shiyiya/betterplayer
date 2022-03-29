@@ -13,7 +13,7 @@ class _HlsSubtitlesPageState extends State<HlsSubtitlesPage> {
   @override
   void initState() {
     BetterPlayerControlsConfiguration controlsConfiguration =
-        BetterPlayerControlsConfiguration(
+        const BetterPlayerControlsConfiguration(
       controlBarColor: Colors.black26,
       iconsColor: Colors.white,
       playIcon: Icons.play_arrow_outlined,
@@ -45,7 +45,7 @@ class _HlsSubtitlesPageState extends State<HlsSubtitlesPage> {
             controlsConfiguration: controlsConfiguration,
             aspectRatio: 16 / 9,
             fit: BoxFit.contain,
-            subtitlesConfiguration: BetterPlayerSubtitlesConfiguration(
+            subtitlesConfiguration: const BetterPlayerSubtitlesConfiguration(
               fontSize: 16.0,
             ));
     BetterPlayerDataSource dataSource = BetterPlayerDataSource(
@@ -60,14 +60,14 @@ class _HlsSubtitlesPageState extends State<HlsSubtitlesPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("HLS subtitles"),
+        title: const Text("HLS subtitles"),
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
             const SizedBox(height: 8),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16),
               child: Text(
                 "Player with HLS stream which loads subtitles from HLS."
                 " You can choose subtitles by using overflow menu (3 dots in right corner).",

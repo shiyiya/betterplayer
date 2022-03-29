@@ -12,7 +12,7 @@ class VideoListPage extends StatefulWidget {
 }
 
 class _VideoListPageState extends State<VideoListPage> {
-  final _random = new Random();
+  final _random = Random();
   final List<String> _videos = [
     Constants.bugBuckBunnyVideoUrl,
     Constants.forBiggerBlazesUrl,
@@ -38,12 +38,12 @@ class _VideoListPageState extends State<VideoListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Video in list")),
+      appBar: AppBar(title: const Text("Video in list")),
       body: Container(
         color: Colors.grey,
         child: Column(children: [
           TextButton(
-            child: Text("Update page state"),
+            child: const Text("Update page state"),
             onPressed: () {
               setState(() {
                 value++;

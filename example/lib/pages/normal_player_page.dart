@@ -15,7 +15,7 @@ class _NormalPlayerPageState extends State<NormalPlayerPage> {
   @override
   void initState() {
     BetterPlayerConfiguration betterPlayerConfiguration =
-        BetterPlayerConfiguration(
+        const BetterPlayerConfiguration(
       aspectRatio: 16 / 9,
       fit: BoxFit.contain,
       autoPlay: true,
@@ -38,7 +38,7 @@ class _NormalPlayerPageState extends State<NormalPlayerPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Normal player page"),
+        title: const Text("Normal player page"),
       ),
       body: Column(
         children: [

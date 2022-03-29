@@ -13,7 +13,7 @@ class _ResolutionsPageState extends State<ResolutionsPage> {
   @override
   void initState() {
     BetterPlayerConfiguration betterPlayerConfiguration =
-        BetterPlayerConfiguration(
+        const BetterPlayerConfiguration(
       aspectRatio: 16 / 9,
       fit: BoxFit.contain,
     );
@@ -31,12 +31,12 @@ class _ResolutionsPageState extends State<ResolutionsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Resolutions"),
+        title: const Text("Resolutions"),
       ),
       body: Column(children: [
         const SizedBox(height: 8),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16),
           child: Text(
             "Video with different resolutions to select. Click on overflow icon"
             " (3 dots in right corner) and select different qualities.",

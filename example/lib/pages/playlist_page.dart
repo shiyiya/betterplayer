@@ -12,12 +12,12 @@ class PlaylistPage extends StatefulWidget {
 class _PlaylistPageState extends State<PlaylistPage> {
   final GlobalKey<BetterPlayerPlaylistState> _betterPlayerPlaylistStateKey =
       GlobalKey();
-  List<BetterPlayerDataSource> _dataSourceList = [];
+  final List<BetterPlayerDataSource> _dataSourceList = [];
   late BetterPlayerConfiguration _betterPlayerConfiguration;
   late BetterPlayerPlaylistConfiguration _betterPlayerPlaylistConfiguration;
 
   _PlaylistPageState() {
-    _betterPlayerConfiguration = BetterPlayerConfiguration(
+    _betterPlayerConfiguration = const BetterPlayerConfiguration(
       aspectRatio: 1,
       fit: BoxFit.cover,
       placeholderOnTop: true,
@@ -28,7 +28,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
         DeviceOrientation.portraitDown,
       ],
     );
-    _betterPlayerPlaylistConfiguration = BetterPlayerPlaylistConfiguration(
+    _betterPlayerPlaylistConfiguration = const BetterPlayerPlaylistConfiguration(
       loopVideos: true,
       nextVideoDelay: Duration(seconds: 3),
     );
@@ -72,16 +72,16 @@ class _PlaylistPageState extends State<PlaylistPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Playlist"),
+        title: const Text("Playlist"),
       ),
       body: FutureBuilder<List<BetterPlayerDataSource>>(
         future: setupData(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
-            return Text("Building!");
+            return const Text("Building!");
           } else {
             return ListView(children: [
-              Padding(
+              const Padding(
                 padding: EdgeInsets.all(8),
                 child: Text(
                     "Playlist widget will load automatically next video once current "
@@ -101,13 +101,13 @@ class _PlaylistPageState extends State<PlaylistPage> {
                 onPressed: () {
                   _betterPlayerPlaylistController!.setupDataSource(0);
                 },
-                child: Text("Change to first data source"),
+                child: const Text("Change to first data source"),
               ),
               ElevatedButton(
                 onPressed: () {
                   _betterPlayerPlaylistController!.setupDataSource(2);
                 },
-                child: Text("Change to last source"),
+                child: const Text("Change to last source"),
               ),
               ElevatedButton(
                 onPressed: () {
@@ -115,14 +115,14 @@ class _PlaylistPageState extends State<PlaylistPage> {
                       _betterPlayerPlaylistController!.currentDataSourceIndex
                           .toString());
                 },
-                child: Text("Check currently playing video index"),
+                child: const Text("Check currently playing video index"),
               ),
               ElevatedButton(
                 onPressed: () {
                   _betterPlayerPlaylistController!.betterPlayerController!
                       .pause();
                 },
-                child: Text("Pause current video with BetterPlayerController"),
+                child: const Text("Pause current video with BetterPlayerController"),
               ),
               ElevatedButton(
                 onPressed: () {
@@ -138,7 +138,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
                   ];
                   _betterPlayerPlaylistController?.setupDataSourceList(list);
                 },
-                child: Text("Setup new data source list"),
+                child: const Text("Setup new data source list"),
               ),
             ]);
           }

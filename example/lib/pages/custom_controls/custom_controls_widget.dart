@@ -44,10 +44,11 @@ class _CustomControlsWidgetState extends State<CustomControlsWidget> {
                   ),
                 ),
                 onTap: () => setState(() {
-                  if (widget.controller!.isFullScreen)
+                  if (widget.controller!.isFullScreen) {
                     widget.controller!.exitFullScreen();
-                  else
+                  } else {
                     widget.controller!.enterFullScreen();
+                  }
                 }),
               ),
             ),
@@ -79,14 +80,14 @@ class _CustomControlsWidgetState extends State<CustomControlsWidget> {
                               if (rewindDuration <
                                   widget.controller!.videoPlayerController!
                                       .value.duration!) {
-                                widget.controller!.seekTo(Duration(seconds: 0));
+                                widget.controller!.seekTo(const Duration(seconds: 0));
                               } else {
                                 widget.controller!.seekTo(rewindDuration);
                               }
                             }
                           });
                         },
-                        child: Icon(
+                        child: const Icon(
                           Icons.fast_rewind,
                           color: Colors.white,
                         ),
@@ -94,10 +95,11 @@ class _CustomControlsWidgetState extends State<CustomControlsWidget> {
                       InkWell(
                         onTap: () {
                           setState(() {
-                            if (widget.controller!.isPlaying()!)
+                            if (widget.controller!.isPlaying()!) {
                               widget.controller!.pause();
-                            else
+                            } else {
                               widget.controller!.play();
+                            }
                           });
                         },
                         child: Icon(
@@ -118,7 +120,7 @@ class _CustomControlsWidgetState extends State<CustomControlsWidget> {
                               if (forwardDuration >
                                   widget.controller!.videoPlayerController!
                                       .value.duration!) {
-                                widget.controller!.seekTo(Duration(seconds: 0));
+                                widget.controller!.seekTo(const Duration(seconds: 0));
                                 widget.controller!.pause();
                               } else {
                                 widget.controller!.seekTo(forwardDuration);
@@ -126,7 +128,7 @@ class _CustomControlsWidgetState extends State<CustomControlsWidget> {
                             }
                           });
                         },
-                        child: Icon(
+                        child: const Icon(
                           Icons.fast_forward,
                           color: Colors.white,
                         ),

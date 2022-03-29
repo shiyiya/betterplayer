@@ -20,7 +20,7 @@ class _VideoListWidgetState extends State<VideoListWidget> {
   void initState() {
     super.initState();
     controller = BetterPlayerListVideoPlayerController();
-    betterPlayerConfiguration = BetterPlayerConfiguration(autoPlay: true);
+    betterPlayerConfiguration = const BetterPlayerConfiguration(autoPlay: true);
   }
 
   @override
@@ -31,15 +31,15 @@ class _VideoListWidgetState extends State<VideoListWidget> {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+      margin: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: EdgeInsets.all(8),
+            padding: const EdgeInsets.all(8),
             child: Text(
               videoListData!.videoTitle,
-              style: TextStyle(fontSize: 50),
+              style: const TextStyle(fontSize: 50),
             ),
           ),
           AspectRatio(
@@ -52,20 +52,20 @@ class _VideoListWidgetState extends State<VideoListWidget> {
                           showNotification: false,
                           title: videoListData!.videoTitle,
                           author: "Test"),
-                  bufferingConfiguration: BetterPlayerBufferingConfiguration(
+                  bufferingConfiguration: const BetterPlayerBufferingConfiguration(
                       minBufferMs: 2000,
                       maxBufferMs: 10000,
                       bufferForPlaybackMs: 1000,
                       bufferForPlaybackAfterRebufferMs: 2000),
                 ),
-                configuration: BetterPlayerConfiguration(
+                configuration: const BetterPlayerConfiguration(
                     autoPlay: false, aspectRatio: 1, handleLifecycle: true),
                 //key: Key(videoListData.hashCode.toString()),
                 playFraction: 0.8,
                 betterPlayerListVideoPlayerController: controller,
               ),
               aspectRatio: 1),
-          Padding(
+          const Padding(
             padding: EdgeInsets.all(8),
             child: Text(
                 "Horror: In Steven Spielberg's Jaws, a shark terrorizes a beach "
@@ -78,21 +78,21 @@ class _VideoListWidgetState extends State<VideoListWidget> {
           Center(
             child: Wrap(children: [
               ElevatedButton(
-                child: Text("Play"),
+                child: const Text("Play"),
                 onPressed: () {
                   controller!.play();
                 },
               ),
               const SizedBox(width: 8),
               ElevatedButton(
-                child: Text("Pause"),
+                child: const Text("Pause"),
                 onPressed: () {
                   controller!.pause();
                 },
               ),
               const SizedBox(width: 8),
               ElevatedButton(
-                child: Text("Set max volume"),
+                child: const Text("Set max volume"),
                 onPressed: () {
                   controller!.setVolume(100);
                 },

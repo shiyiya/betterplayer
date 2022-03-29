@@ -14,7 +14,7 @@ class _OverriddenAspectRatioPageState extends State<OverriddenAspectRatioPage> {
   @override
   void initState() {
     BetterPlayerConfiguration betterPlayerConfiguration =
-        BetterPlayerConfiguration(
+        const BetterPlayerConfiguration(
       aspectRatio: 16 / 9,
       fit: BoxFit.fill,
     );
@@ -30,13 +30,13 @@ class _OverriddenAspectRatioPageState extends State<OverriddenAspectRatioPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Overridden aspect ratio"),
+        title: const Text("Overridden aspect ratio"),
       ),
       body: Column(
         children: [
           const SizedBox(height: 8),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16),
             child: Text(
               "Player with different rotation and fit.",
               style: TextStyle(fontSize: 16),

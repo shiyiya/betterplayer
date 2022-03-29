@@ -12,13 +12,13 @@ class EventListenerPage extends StatefulWidget {
 class _EventListenerPageState extends State<EventListenerPage> {
   late BetterPlayerController _betterPlayerController;
   List<BetterPlayerEvent> events = [];
-  StreamController<DateTime> _eventStreamController =
+  final StreamController<DateTime> _eventStreamController =
       StreamController.broadcast();
 
   @override
   void initState() {
     BetterPlayerConfiguration betterPlayerConfiguration =
-        BetterPlayerConfiguration(
+        const BetterPlayerConfiguration(
       aspectRatio: 16 / 9,
       fit: BoxFit.contain,
     );
@@ -48,13 +48,13 @@ class _EventListenerPageState extends State<EventListenerPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Event listener"),
+        title: const Text("Event listener"),
       ),
       body: Column(
         children: [
           const SizedBox(height: 8),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16),
             child: Text(
               "Better Player exposes events which can be listened with event "
               "listener. Start player to see events flowing.",
@@ -79,7 +79,7 @@ class _EventListenerPageState extends State<EventListenerPage> {
                           children: [
                             Text("Event: ${event.betterPlayerEventType} "
                                 "parameters: ${(event.parameters ?? <String, dynamic>{}).toString()}"),
-                            Divider(),
+                            const Divider(),
                           ],
                         ),
                       )

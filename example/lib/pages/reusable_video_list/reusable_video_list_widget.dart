@@ -49,7 +49,7 @@ class _ReusableVideoListWidgetState extends State<ReusableVideoListWidget> {
         controller!.setupDataSource(BetterPlayerDataSource.network(
             videoListData!.videoUrl,
             cacheConfiguration:
-                BetterPlayerCacheConfiguration(useCache: true)));
+                const BetterPlayerCacheConfiguration(useCache: true)));
         if (!betterPlayerControllerStreamController.isClosed) {
           betterPlayerControllerStreamController.add(controller);
         }
@@ -94,15 +94,15 @@ class _ReusableVideoListWidgetState extends State<ReusableVideoListWidget> {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+      margin: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: EdgeInsets.all(8),
+            padding: const EdgeInsets.all(8),
             child: Text(
               videoListData!.videoTitle,
-              style: TextStyle(fontSize: 50),
+              style: const TextStyle(fontSize: 50),
             ),
           ),
           VisibilityDetector(
@@ -111,7 +111,7 @@ class _ReusableVideoListWidgetState extends State<ReusableVideoListWidget> {
               if (!widget.canBuildVideo!()) {
                 _timer?.cancel();
                 _timer = null;
-                _timer = Timer(Duration(milliseconds: 500), () {
+                _timer = Timer(const Duration(milliseconds: 500), () {
                   if (info.visibleFraction >= 0.6) {
                     _setupController();
                   } else {
@@ -137,7 +137,7 @@ class _ReusableVideoListWidgetState extends State<ReusableVideoListWidget> {
                         )
                       : Container(
                           color: Colors.black,
-                          child: Center(
+                          child: const Center(
                             child: CircularProgressIndicator(
                               valueColor:
                                   AlwaysStoppedAnimation<Color>(Colors.white),
@@ -148,7 +148,7 @@ class _ReusableVideoListWidgetState extends State<ReusableVideoListWidget> {
               },
             ),
           ),
-          Padding(
+          const Padding(
             padding: EdgeInsets.all(8),
             child: Text(
                 "Horror: In Steven Spielberg's Jaws, a shark terrorizes a beach "
@@ -161,21 +161,21 @@ class _ReusableVideoListWidgetState extends State<ReusableVideoListWidget> {
           Center(
             child: Wrap(children: [
               ElevatedButton(
-                child: Text("Play"),
+                child: const Text("Play"),
                 onPressed: () {
                   controller!.play();
                 },
               ),
               const SizedBox(width: 8),
               ElevatedButton(
-                child: Text("Pause"),
+                child: const Text("Pause"),
                 onPressed: () {
                   controller!.pause();
                 },
               ),
               const SizedBox(width: 8),
               ElevatedButton(
-                child: Text("Set max volume"),
+                child: const Text("Set max volume"),
                 onPressed: () {
                   controller!.setVolume(1.0);
                 },

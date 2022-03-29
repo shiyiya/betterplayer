@@ -16,7 +16,7 @@ class _MemoryPlayerPageState extends State<MemoryPlayerPage> {
   @override
   void initState() {
     BetterPlayerConfiguration betterPlayerConfiguration =
-        BetterPlayerConfiguration(
+        const BetterPlayerConfiguration(
       aspectRatio: 16 / 9,
       fit: BoxFit.contain,
     );
@@ -40,13 +40,13 @@ class _MemoryPlayerPageState extends State<MemoryPlayerPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Memory player"),
+        title: const Text("Memory player"),
       ),
       body: Column(
         children: [
           const SizedBox(height: 8),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16),
             child: Text(
               "Memory player with plays video from bytes list. In this example"
               "file bytes are read to list and then used in player.",

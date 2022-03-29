@@ -12,7 +12,7 @@ class PlaceholderUntilPlayPage extends StatefulWidget {
 
 class _PlaceholderUntilPlayPageState extends State<PlaceholderUntilPlayPage> {
   late BetterPlayerController _betterPlayerController;
-  StreamController<bool> _placeholderStreamController =
+  final StreamController<bool> _placeholderStreamController =
       StreamController.broadcast();
   bool _showPlaceholder = true;
 
@@ -66,13 +66,13 @@ class _PlaceholderUntilPlayPageState extends State<PlaceholderUntilPlayPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Placeholder until play"),
+        title: const Text("Placeholder until play"),
       ),
       body: Column(
         children: [
           const SizedBox(height: 8),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16),
             child: Text(
               "Normal player with placeholder shown until video is started.",
               style: TextStyle(fontSize: 16),

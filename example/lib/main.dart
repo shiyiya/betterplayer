@@ -14,13 +14,13 @@ class MyApp extends StatelessWidget {
         },
         child: MaterialApp(
           title: 'Better player demo',
-          localizationsDelegates: [
+          localizationsDelegates: const [
             GlobalMaterialLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,
           ],
-          supportedLocales: [
-            const Locale('en', 'US'),
-            const Locale('pl', 'PL'),
+          supportedLocales: const [
+            Locale('en', 'US'),
+            Locale('pl', 'PL'),
           ],
           theme: ThemeData(
             primarySwatch: Colors.green,

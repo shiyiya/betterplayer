@@ -14,7 +14,7 @@ class _SubtitlesPageState extends State<SubtitlesPage> {
   @override
   void initState() {
     BetterPlayerConfiguration betterPlayerConfiguration =
-        BetterPlayerConfiguration(
+        const BetterPlayerConfiguration(
       aspectRatio: 16 / 9,
       fit: BoxFit.contain,
       subtitlesConfiguration: BetterPlayerSubtitlesConfiguration(
@@ -54,12 +54,12 @@ class _SubtitlesPageState extends State<SubtitlesPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Subtitles"),
+        title: const Text("Subtitles"),
       ),
       body: Column(children: [
         const SizedBox(height: 8),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16),
           child: Text(
             "Player with subtitles loaded from file. Subtitles are enabled by default."
             " You can choose subtitles by using overflow menu (3 dots in right corner).",
