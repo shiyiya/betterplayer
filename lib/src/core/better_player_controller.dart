@@ -594,6 +594,7 @@ class BetterPlayerController {
 
   ///Disables full screen mode in player. This will trigger route change.
   void exitFullScreen() {
+    if (_isFullScreen) return;
     _isFullScreen = false;
     _postControllerEvent(BetterPlayerControllerEvent.hideFullscreen);
   }
